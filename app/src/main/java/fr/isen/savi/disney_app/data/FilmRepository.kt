@@ -2,6 +2,8 @@ package fr.isen.savi.disney_app.data
 
 import fr.isen.savi.disney_app.model.Film
 import fr.isen.savi.disney_app.model.Universe
+import fr.isen.savi.disney_app.model.UserFilmStatus
+import fr.isen.savi.disney_app.model.FilmOwnerInfo
 
 class FilmoRepository {
 
@@ -173,5 +175,52 @@ class FilmoRepository {
 
     fun getFilmById(filmId: String): Film? {
         return getAllFilms().find { it.id == filmId }
+    }
+    companion object {
+        private val userFilmStatuses = mutableListOf<UserFilmStatus>()
+    }
+    fun getUserFilmStatus(userId: String, filmId: String): UserFilmStatus? {
+        return userFilmStatuses.find {
+            it.userId == userId && it.filmId == filmId
+        }
+    }
+
+    fun saveUserFilmStatus(status: UserFilmStatus) {
+
+        userFilmStatuses.removeAll {
+            it.userId == status.userId && it.filmId == status.filmId
+        }
+
+        userFilmStatuses.add(status)
+    }
+    fun getAllUserStatuses(userId: String): List<UserFilmStatus> {
+        return userFilmStatuses.filter { it.userId == userId }
+    }
+
+    fun getFilmsByIds(filmIds: List<String>): List<Film> {
+        return getAllFilms().filter { it.id in filmIds }
+    }
+
+    fun getOwnersForFilm(filmId: String): List<FilmOwnerInfo> {
+        return listOf(
+            FilmOwnerInfo(
+                userId = "1",
+                displayName = "Zoe",
+                ownPhysical = true,
+                wantToGetRid = false
+            ),
+            FilmOwnerInfo(
+                userId = "2",
+                displayName = "Lucas",
+                ownPhysical = true,
+                wantToGetRid = true
+            ),
+            FilmOwnerInfo(
+                userId = "3",
+                displayName = "Emma",
+                ownPhysical = false,
+                wantToGetRid = false
+            )
+        ).filter { it.ownPhysical }
     }
 }

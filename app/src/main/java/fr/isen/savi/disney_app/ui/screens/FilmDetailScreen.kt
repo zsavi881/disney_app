@@ -26,8 +26,12 @@ fun FilmDetailScreen(
     filmId: String,
     filmDetailViewModel: FilmDetailViewModel
 ) {
+    // On observe les données du ViewModel
     val film by filmDetailViewModel.film.collectAsState()
+    val userStatus by filmDetailViewModel.userStatusMap.collectAsState()
+    val owners by filmDetailViewModel.owners.collectAsState()
 
+    // On charge le film au démarrage
     LaunchedEffect(filmId) {
         filmDetailViewModel.loadFilm(filmId)
     }
@@ -47,7 +51,7 @@ fun FilmDetailScreen(
         return
     }
 
-    val currentFilm = film ?: return
+    val currentFilm = film!! // On sait qu'il n'est pas nul ici
 
     Column(
         modifier = Modifier
@@ -66,99 +70,109 @@ fun FilmDetailScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-
                 Text(
                     text = "Universe: ${currentFilm.universeName}",
                     style = MaterialTheme.typography.bodyLarge
                 )
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
                     text = "Release date: ${currentFilm.releaseDate}",
                     style = MaterialTheme.typography.bodyLarge
                 )
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
                     text = "Duration: ${currentFilm.durationMinutes} min",
                     style = MaterialTheme.typography.bodyLarge
                 )
-
                 currentFilm.category?.let {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Category: $it",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    Text(text = "Category: $it", style = MaterialTheme.typography.bodyLarge)
                 }
-
                 currentFilm.saga?.let {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Saga: $it",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    Text(text = "Saga: $it", style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Synopsis",
-            style = MaterialTheme.typography.titleLarge
-        )
-
+        Text(text = "Synopsis", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = currentFilm.synopsis,
-            style = MaterialTheme.typography.bodyLarge
-        )
+        Text(text = currentFilm.synopsis, style = MaterialTheme.typography.bodyLarge)
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text(
-            text = "My status",
-            style = MaterialTheme.typography.titleLarge
-        )
-
+        // --- SECTION PROPRIÉTAIRES ---
+        Text(text = "Owners", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(12.dp))
 
+        if (owners.isEmpty()) {
+            Text(
+                text = "No owner found for this film",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        } else {
+            owners.forEach { ownerId ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(text = "User ID: $ownerId", style = MaterialTheme.typography.titleMedium)
+                        Text(text = "Owns a physical copy", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // --- SECTION STATUTS (MON COMPTE) ---
+        Text(text = "My status", style = MaterialTheme.typography.titleLarge)
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Bouton Watched
+        val isWatched = userStatus["watched"] == true
         Button(
-            onClick = { },
+            onClick = { filmDetailViewModel.updateStatus(filmId, "watched", !isWatched) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Watched")
+            Text(if (isWatched) "Watched ✓" else "Mark as Watched")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Bouton Want to Watch
+        val wantToWatch = userStatus["wantToWatch"] == true
         Button(
-            onClick = { },
+            onClick = { filmDetailViewModel.updateStatus(filmId, "wantToWatch", !wantToWatch) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Want to watch")
+            Text(if (wantToWatch) "In Watchlist ✓" else "Add to Watchlist")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Bouton Own Physical
+        val ownsPhysical = userStatus["ownPhysical"] == true
         Button(
-            onClick = { },
+            onClick = { filmDetailViewModel.updateStatus(filmId, "ownPhysical", !ownsPhysical) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Own on DVD / Blu-ray")
+            Text(if (ownsPhysical) "Own DVD/Blu-ray ✓" else "I own the DVD/Blu-ray")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Bouton Get Rid
+        val wantToGetRid = userStatus["wantToGetRid"] == true
         Button(
-            onClick = { },
+            onClick = { filmDetailViewModel.updateStatus(filmId, "wantToGetRid", !wantToGetRid) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Want to get rid of")
+            Text(if (wantToGetRid) "Wants to get rid of it ✓" else "I want to get rid of it")
         }
     }
 }

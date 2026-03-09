@@ -10,6 +10,11 @@ import androidx.navigation.navArgument
 // On importe tout ce qui est dans screens et viewmodel
 import fr.isen.savi.disney_app.ui.screens.*
 import fr.isen.savi.disney_app.viewmodel.*
+import fr.isen.savi.disney_app.viewmodel.FilmDetailViewModel
+import fr.isen.savi.disney_app.viewmodel.FilmListViewModel
+import fr.isen.savi.disney_app.ui.screens.FilmDetailScreen
+import fr.isen.savi.disney_app.ui.screens.ProfileScreen
+import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
 
 object Routes {
     const val LOGIN = "login"
@@ -17,6 +22,7 @@ object Routes {
     const val HOME = "home"
     const val FILMS = "films"
     const val FILM_DETAIL = "film"
+    const val PROFILE = "profile"
 }
 
 @Composable
@@ -28,6 +34,7 @@ fun AppNavGraph() {
     val filmListViewModel: FilmListViewModel = viewModel()
     val universeViewModel: UniverseViewModel = viewModel()
     val filmDetailViewModel: FilmDetailViewModel = viewModel()
+    val profileViewModel: ProfileViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -66,6 +73,9 @@ fun AppNavGraph() {
                 universeViewModel = universeViewModel,
                 onUniverseClick = { universeId ->
                     navController.navigate("${Routes.FILMS}/$universeId")
+                },
+                onProfileClick = {
+                    navController.navigate(Routes.PROFILE)
                 }
             )
         }
@@ -94,6 +104,17 @@ fun AppNavGraph() {
             FilmDetailScreen(
                 filmId = filmId,
                 filmDetailViewModel = filmDetailViewModel
+            )
+        }
+        composable(Routes.PROFILE) {
+            ProfileScreen(
+                profileViewModel = profileViewModel,
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(0)
+                    }
+                }
             )
         }
     }
