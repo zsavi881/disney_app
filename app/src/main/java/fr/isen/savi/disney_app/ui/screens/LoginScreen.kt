@@ -1,0 +1,78 @@
+package fr.isen.savi.disney_app.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import fr.isen.savi.disney_app.viewmodel.AuthViewModel
+
+@Composable
+fun LoginScreen(
+    authViewModel: AuthViewModel,
+    onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit
+) {
+
+    val user by authViewModel.user.collectAsState()
+    val error by authViewModel.error.collectAsState()
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    if (user != null) {
+        LaunchedEffect(Unit) {
+            onLoginSuccess()
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Text("Login", style = MaterialTheme.typography.headlineMedium)
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                authViewModel.login(email, password)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Login")
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TextButton(onClick = onRegisterClick) {
+            Text("Create an account")
+        }
+
+        error?.let {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(it, color = MaterialTheme.colorScheme.error)
+        }
+    }
+}
