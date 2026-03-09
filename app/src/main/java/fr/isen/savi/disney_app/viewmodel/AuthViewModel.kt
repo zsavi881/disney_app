@@ -4,8 +4,12 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import fr.isen.savi.disney_app.model.UserProfile
+import fr.isen.savi.disney_app.repository.AuthRepository
 
 class AuthViewModel : ViewModel() {
+
+    // On initialise ton repository ici
+    private val authRepository = AuthRepository()
 
     private val _user = MutableStateFlow<UserProfile?>(null)
     val user: StateFlow<UserProfile?> = _user
@@ -16,45 +20,60 @@ class AuthViewModel : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    // On vérifie si un utilisateur est déjà connecté au démarrage
+    init {
+        val currentUser = authRepository.getCurrentUser()
+        if (currentUser != null) {
+            _user.value = UserProfile(
+                uid = currentUser.uid,
+                displayName = currentUser.displayName ?: "Utilisateur",
+                email = currentUser.email ?: ""
+            )
+        }
+    }
 
     fun login(email: String, password: String) {
         _isLoading.value = true
+        _error.value = null
 
-        // simulation login (Firebase plus tard)
-        if (email.isNotBlank() && password.isNotBlank()) {
-            _user.value = UserProfile(
-                uid = "1",
-                displayName = "Test User",
-                email = email
-            )
-            _error.value = null
-        } else {
-            _error.value = "Invalid credentials"
+        authRepository.signIn(email, password) { success, errorMessage ->
+            _isLoading.value = false
+            if (success) {
+                val firebaseUser = authRepository.getCurrentUser()
+                _user.value = UserProfile(
+                    uid = firebaseUser?.uid ?: "",
+                    displayName = firebaseUser?.displayName ?: "Utilisateur",
+                    email = firebaseUser?.email ?: email
+                )
+            } else {
+                _error.value = errorMessage ?: "Erreur de connexion"
+            }
         }
-
-        _isLoading.value = false
     }
-
 
     fun register(name: String, email: String, password: String) {
         _isLoading.value = true
+        _error.value = null
 
-        if (name.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
-            _user.value = UserProfile(
-                uid = "1",
-                displayName = name,
-                email = email
-            )
-            _error.value = null
-        } else {
-            _error.value = "Invalid registration"
+        authRepository.signUp(email, password) { success, errorMessage ->
+            _isLoading.value = false
+            if (success) {
+                // Note : Firebase Auth ne stocke pas le "name" par défaut au signUp,
+                // mais on l'affiche pour l'UI de Zoé
+                val firebaseUser = authRepository.getCurrentUser()
+                _user.value = UserProfile(
+                    uid = firebaseUser?.uid ?: "",
+                    displayName = name,
+                    email = email
+                )
+            } else {
+                _error.value = errorMessage ?: "Erreur d'inscription"
+            }
         }
-
-        _isLoading.value = false
     }
 
-
     fun logout() {
+        authRepository.signOut()
         _user.value = null
     }
 }
