@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "562918656644",
+    "project_id": "disney-app-b44e0",
+    "storage_bucket": "disney-app-b44e0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562918656644:android:97235a4bd754d93dbb90d1",
+        "android_client_info": {
+          "package_name": "fr.isen.savi.disney_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7roFZ85jMgRkBxzwE_KOTQodqxc50cJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
