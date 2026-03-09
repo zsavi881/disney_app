@@ -6,6 +6,8 @@ import androidx.navigation.compose.*
 import fr.isen.savi.disney_app.ui.screens.LoginScreen
 import fr.isen.savi.disney_app.ui.screens.RegisterScreen
 import fr.isen.savi.disney_app.viewmodel.AuthViewModel
+import fr.isen.savi.disney_app.ui.screens.UniverseScreen
+import fr.isen.savi.disney_app.viewmodel.UniverseViewModel
 
 object Routes {
     const val LOGIN = "login"
@@ -46,7 +48,14 @@ fun AppNavGraph() {
         }
 
         composable(Routes.HOME) {
-            // écran placeholder
+
+            val universeViewModel: UniverseViewModel = viewModel()
+
+            UniverseScreen(
+                universeViewModel = universeViewModel,
+                onUniverseClick = { universeId ->
+                }
+            )
         }
     }
 }
