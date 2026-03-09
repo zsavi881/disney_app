@@ -175,7 +175,9 @@ class FilmoRepository {
     fun getFilmById(filmId: String): Film? {
         return getAllFilms().find { it.id == filmId }
     }
-    private val userFilmStatuses = mutableListOf<UserFilmStatus>()
+    companion object {
+        private val userFilmStatuses = mutableListOf<UserFilmStatus>()
+    }
     fun getUserFilmStatus(userId: String, filmId: String): UserFilmStatus? {
         return userFilmStatuses.find {
             it.userId == userId && it.filmId == filmId
@@ -189,5 +191,12 @@ class FilmoRepository {
         }
 
         userFilmStatuses.add(status)
+    }
+    fun getAllUserStatuses(userId: String): List<UserFilmStatus> {
+        return userFilmStatuses.filter { it.userId == userId }
+    }
+
+    fun getFilmsByIds(filmIds: List<String>): List<Film> {
+        return getAllFilms().filter { it.id in filmIds }
     }
 }

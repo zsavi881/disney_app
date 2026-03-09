@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,7 +26,8 @@ import fr.isen.savi.disney_app.viewmodel.UniverseViewModel
 @Composable
 fun UniverseScreen(
     universeViewModel: UniverseViewModel,
-    onUniverseClick: (String) -> Unit
+    onUniverseClick: (String) -> Unit,
+    onProfileClick: () -> Unit
 ) {
     val universes by universeViewModel.universes.collectAsState()
 
@@ -44,6 +46,13 @@ fun UniverseScreen(
                 text = "Choose a universe to explore its films",
                 style = MaterialTheme.typography.bodyMedium
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onProfileClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Go to profile")
+            }
         }
 
         items(universes) { universe ->
