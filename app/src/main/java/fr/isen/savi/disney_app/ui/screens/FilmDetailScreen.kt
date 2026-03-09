@@ -27,9 +27,13 @@ fun FilmDetailScreen(
     filmDetailViewModel: FilmDetailViewModel
 ) {
     val film by filmDetailViewModel.film.collectAsState()
+    val status by filmDetailViewModel.status.collectAsState()
 
     LaunchedEffect(filmId) {
-        filmDetailViewModel.loadFilm(filmId)
+        filmDetailViewModel.loadFilm(
+            filmId = filmId,
+            userId = "1"
+        )
     }
 
     if (film == null) {
@@ -128,37 +132,61 @@ fun FilmDetailScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+                filmDetailViewModel.updateStatus(
+                    userId = "1",
+                    filmId = filmId,
+                    watched = true
+                )
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Watched")
+            Text(if (status?.watched == true) "Watched ✓" else "Watched")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+                filmDetailViewModel.updateStatus(
+                    userId = "1",
+                    filmId = filmId,
+                    wantToWatch = true
+                )
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Want to watch")
+            Text(if (status?.wantToWatch == true) "Want to watch ✓" else "Want to watch")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+                filmDetailViewModel.updateStatus(
+                    userId = "1",
+                    filmId = filmId,
+                    own = true
+                )
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Own on DVD / Blu-ray")
+            Text(if (status?.ownPhysical == true) "Own ✓" else "Own DVD / Blu-ray")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+                filmDetailViewModel.updateStatus(
+                    userId = "1",
+                    filmId = filmId,
+                    getRid = true
+                )
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Want to get rid of")
+            Text(if (status?.wantToGetRid == true) "Want to get rid ✓" else "Want to get rid")
         }
     }
 }

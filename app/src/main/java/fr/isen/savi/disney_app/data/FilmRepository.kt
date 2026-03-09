@@ -2,6 +2,7 @@ package fr.isen.savi.disney_app.data
 
 import fr.isen.savi.disney_app.model.Film
 import fr.isen.savi.disney_app.model.Universe
+import fr.isen.savi.disney_app.model.UserFilmStatus
 
 class FilmoRepository {
 
@@ -173,5 +174,20 @@ class FilmoRepository {
 
     fun getFilmById(filmId: String): Film? {
         return getAllFilms().find { it.id == filmId }
+    }
+    private val userFilmStatuses = mutableListOf<UserFilmStatus>()
+    fun getUserFilmStatus(userId: String, filmId: String): UserFilmStatus? {
+        return userFilmStatuses.find {
+            it.userId == userId && it.filmId == filmId
+        }
+    }
+
+    fun saveUserFilmStatus(status: UserFilmStatus) {
+
+        userFilmStatuses.removeAll {
+            it.userId == status.userId && it.filmId == status.filmId
+        }
+
+        userFilmStatuses.add(status)
     }
 }
