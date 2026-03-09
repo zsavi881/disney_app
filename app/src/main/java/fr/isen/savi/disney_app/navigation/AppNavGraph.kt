@@ -11,13 +11,17 @@ import fr.isen.savi.disney_app.viewmodel.UniverseViewModel
 import fr.isen.savi.disney_app.ui.screens.FilmListScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import fr.isen.savi.disney_app.viewmodel.FilmDetailViewModel
 import fr.isen.savi.disney_app.viewmodel.FilmListViewModel
+import fr.isen.savi.disney_app.ui.screens.FilmDetailScreen
 
 object Routes {
     const val LOGIN = "login"
     const val REGISTER = "register"
     const val HOME = "home"
     const val FILMS = "films"
+
+    const val FILM_DETAIL = "film"
 }
 
 @Composable
@@ -27,6 +31,7 @@ fun AppNavGraph() {
     val filmListViewModel: FilmListViewModel = viewModel()
     val universeViewModel: UniverseViewModel = viewModel()
     val authViewModel: AuthViewModel = viewModel()
+    val filmDetailViewModel: FilmDetailViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -77,7 +82,21 @@ fun AppNavGraph() {
                 universeId = universeId,
                 filmListViewModel = filmListViewModel,
                 onFilmClick = { filmId ->
+                    navController.navigate("${Routes.FILM_DETAIL}/$filmId")
                 }
+            )
+        }
+        composable(
+            route = "${Routes.FILM_DETAIL}/{filmId}",
+            arguments = listOf(
+                navArgument("filmId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val filmId = backStackEntry.arguments?.getString("filmId").orEmpty()
+
+            FilmDetailScreen(
+                filmId = filmId,
+                filmDetailViewModel = filmDetailViewModel
             )
         }
     }

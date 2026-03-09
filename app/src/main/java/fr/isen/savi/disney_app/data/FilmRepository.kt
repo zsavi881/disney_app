@@ -40,8 +40,8 @@ class FilmoRepository {
         )
     }
 
-    fun getFilmsByUniverse(universeId: String): List<Film> {
-        val allFilms = listOf(
+    private fun getAllFilms(): List<Film> {
+        return listOf(
             Film(
                 id = "sw1",
                 title = "Star Wars: Episode I - The Phantom Menace",
@@ -163,9 +163,15 @@ class FilmoRepository {
                 durationMinutes = 192
             )
         )
+    }
 
-        return allFilms
+    fun getFilmsByUniverse(universeId: String): List<Film> {
+        return getAllFilms()
             .filter { it.universeId == universeId }
             .sortedBy { it.releaseDate }
+    }
+
+    fun getFilmById(filmId: String): Film? {
+        return getAllFilms().find { it.id == filmId }
     }
 }
