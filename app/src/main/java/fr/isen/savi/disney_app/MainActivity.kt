@@ -7,6 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import fr.isen.savi.disney_app.repository.FirebaseRepository
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import fr.isen.savi.disney_app.navigation.AppNavGraph
 import fr.isen.savi.disney_app.ui.theme.Disney_AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,6 +28,9 @@ class MainActivity : ComponentActivity() {
         // -------------------------------------
 
         setContent {
+            setContent {
+                AppNavGraph()
+            }
             Disney_AppTheme {
                 // Pour l'instant, on laisse le Greeting ou on appelle l'écran de Zoé
                 // Si Zoé t'a donné un écran de départ (ex: LoginScreen), appelle-le ici.
