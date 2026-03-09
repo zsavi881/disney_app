@@ -6,6 +6,7 @@ import fr.isen.savi.disney_app.data.FilmoRepository
 import fr.isen.savi.disney_app.model.UserFilmStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import fr.isen.savi.disney_app.model.FilmOwnerInfo
 
 class FilmDetailViewModel : ViewModel() {
 
@@ -13,6 +14,9 @@ class FilmDetailViewModel : ViewModel() {
 
     private val _film = MutableStateFlow<Film?>(null)
     val film: StateFlow<Film?> = _film
+
+    private val _owners = MutableStateFlow<List<FilmOwnerInfo>>(emptyList())
+    val owners: StateFlow<List<FilmOwnerInfo>> = _owners
 
     fun loadFilm(
         filmId: String,
@@ -25,6 +29,7 @@ class FilmDetailViewModel : ViewModel() {
             userId,
             filmId
         )
+        _owners.value = repository.getOwnersForFilm(filmId)
     }
     fun updateStatus(
         userId: String,

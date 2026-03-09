@@ -52,6 +52,7 @@ fun FilmDetailScreen(
     }
 
     val currentFilm = film ?: return
+    val owners by filmDetailViewModel.owners.collectAsState()
 
     Column(
         modifier = Modifier
@@ -123,6 +124,56 @@ fun FilmDetailScreen(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Owners",
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        if (owners.isEmpty()) {
+            Text(
+                text = "No owner found for this film",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        } else {
+            owners.forEach { owner ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = owner.displayName,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = if (owner.ownPhysical) {
+                                "Owns this film"
+                            } else {
+                                "Does not own this film"
+                            },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        if (owner.wantToGetRid) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Wants to get rid of it",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+            }
+        }
 
         Text(
             text = "My status",
