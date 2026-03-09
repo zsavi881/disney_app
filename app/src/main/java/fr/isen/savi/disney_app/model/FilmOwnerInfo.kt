@@ -1,4 +1,4 @@
-package fr.isen.savi.filmo_disney.model
+package fr.isen.savi.disney_app.model
 
 data class FilmOwnerInfo(
     val userId: String = "",

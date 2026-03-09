@@ -1,47 +1,40 @@
 package fr.isen.savi.disney_app
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import fr.isen.savi.disney_app.repository.FirebaseRepository
 import fr.isen.savi.disney_app.ui.theme.Disney_AppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // --- PARTIE FIREBASE (TON TRAVAIL) ---
+        val repo = FirebaseRepository()
+
+        // On lance l'importation des données vers la Realtime Database.
+        // Une fois que tu vois les données sur la console Firebase,
+        // tu pourras commenter cette ligne.
+        repo.initialPopulate()
+        Log.d("MainActivity", "Tentative d'importation des films lancée...")
+        // -------------------------------------
+
         setContent {
             Disney_AppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                // Pour l'instant, on laisse le Greeting ou on appelle l'écran de Zoé
+                // Si Zoé t'a donné un écran de départ (ex: LoginScreen), appelle-le ici.
+                Greeting(name = "Disney App - Firebase Connectée")
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Disney_AppTheme {
-        Greeting("Android")
-    }
+fun Greeting(name: String) {
+    androidx.compose.material3.Text(text = "Bienvenue sur $name !")
 }
