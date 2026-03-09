@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import fr.isen.savi.disney_app.repository.FirebaseRepository
 import fr.isen.savi.disney_app.navigation.AppNavGraph
-import fr.isen.savi.disney_app.ui.theme.Disney_AppTheme
+import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         // -------------------------------------
 
         setContent {
-            Disney_AppTheme {
+            DisneyAppTheme {
                 // On appelle le NavGraph qui va gérer l'affichage :
                 // Il commencera par l'écran de Login par défaut.
                 AppNavGraph()
