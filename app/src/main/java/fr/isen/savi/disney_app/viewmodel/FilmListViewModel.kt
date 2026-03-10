@@ -7,26 +7,27 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class FilmListViewModel : ViewModel() {
-
-    // On remplace le FilmoRepository par ton FirebaseRepository
-    private val firebaseRepository = FirebaseRepository()
+    // ON UTILISE LE REPO FIREBASE MAINTENANT
+    private val repository = FirebaseRepository()
 
     private val _films = MutableStateFlow<List<Film>>(emptyList())
     val films: StateFlow<List<Film>> = _films
 
-    private val _universeTitle = MutableStateFlow("")
-    val universeTitle: StateFlow<String> = _universeTitle
-
-    fun loadFilms(universeId: String) {
-        // On récupère TOUS les films depuis Firebase
-        firebaseRepository.getFilms { allFilms ->
-            // On filtre pour ne garder que ceux de l'univers cliqué (ex: "star_wars")
-            val filteredFilms = allFilms.filter { it.universeId == universeId }
-
-            _films.value = filteredFilms
-
-            // On met à jour le titre de l'écran avec le nom de l'univers
-            _universeTitle.value = filteredFilms.firstOrNull()?.universeName ?: universeId
+    fun loadFilmsByUniverse(universeId: String) {
+        // On récupère tous les films et on filtre par univers
+        repository.getCategories { categories ->
+            val allFilms = mutableListOf<Film>()
+            // On fouille dans la hiérarchie pour extraire les films
+            categories.forEach { cat ->
+                cat.franchises.forEach { franchise ->
+                    franchise.films?.let { allFilms.addAll(it) }
+                    franchise.sous_sagas?.forEach { saga ->
+                        allFilms.addAll(saga.films)
+                    }
+                }
+            }
+            // Filtrage par l'ID de l'univers (ex: star_wars)
+            _films.value = allFilms.filter { it.getStableId().contains(universeId) }
         }
     }
 }
