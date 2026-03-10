@@ -6,7 +6,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import fr.isen.savi.disney_app.R
 import fr.isen.savi.disney_app.model.Film
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
 
@@ -15,19 +17,20 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     onLogout: () -> Unit
 ) {
-    // Observation des états du ViewModel
+    // Collecte des états du ViewModel
     val userProfile by profileViewModel.userProfile.collectAsState()
     val ownedFilms by profileViewModel.ownedFilms.collectAsState()
     val watchedFilms by profileViewModel.watchedFilms.collectAsState()
     val wishlistFilms by profileViewModel.wishlistFilms.collectAsState()
-    val toGetRidFilms by profileViewModel.toGetRidFilms.collectAsState()
 
-    // Chargement automatique du profil au lancement de l'écran
+    // On récupère l'état du Dark Mode directement depuis le ViewModel
+    val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+
+    // Chargement des données au démarrage
     LaunchedEffect(Unit) {
-        profileViewModel.loadProfile() // Plus besoin de passer "1", le VM gère l'ID Firebase
+        profileViewModel.loadProfile()
     }
 
-    // Gestion de l'état de chargement
     if (userProfile == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -47,24 +50,37 @@ fun ProfileScreen(
                 text = "Mon Profil Disney",
                 style = MaterialTheme.typography.headlineMedium
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = profile.displayName,
-                style = MaterialTheme.typography.titleLarge
-            )
-
+            Text(text = profile.displayName, style = MaterialTheme.typography.titleLarge)
             Text(
                 text = profile.email,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // --- SECTION RÉGLAGES (DARK MODE) ---
+            Text(text = "Réglages", style = MaterialTheme.typography.titleMedium)
+            Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Mode Sombre")
+                    Switch(
+                        checked = isDarkMode,
+                        onCheckedChange = { profileViewModel.toggleDarkMode() }
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = onLogout,
+                onClick = {
+                    profileViewModel.logout { onLogout() }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
@@ -72,52 +88,26 @@ fun ProfileScreen(
             }
         }
 
-        // Section : Mes films possédés
-        item {
-            FilmSection(title = "Ma Collection (DVD/Blu-ray)", films = ownedFilms)
-        }
-
-        // Section : Films vus
-        item {
-            FilmSection(title = "Films déjà vus", films = watchedFilms)
-        }
-
-        // Section : Liste de souhaits
-        item {
-            FilmSection(title = "Ma liste à voir", films = wishlistFilms)
-        }
-
-        // Section : À se débarrasser
-        item {
-            FilmSection(title = "Films dont je souhaite me séparer", films = toGetRidFilms)
-        }
+        // Sections de films
+        item { FilmSection(title = "Ma Collection (DVD/Blu-ray)", films = ownedFilms) }
+        item { FilmSection(title = "Films déjà vus", films = watchedFilms) }
+        item { FilmSection(title = "Ma liste à voir", films = wishlistFilms) }
     }
 }
 
 @Composable
 fun FilmSection(title: String, films: List<Film>) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+    )) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
+            Text(text = title, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.height(8.dp))
             if (films.isEmpty()) {
-                Text(
-                    text = "Aucun film dans cette catégorie",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Text(text = "Aucun film répertorié", style = MaterialTheme.typography.bodySmall)
             } else {
                 films.forEach { film ->
-                    Text(
-                        text = "• ${film.title}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(vertical = 2.dp)
-                    )
+                    Text(text = "• ${film.title}", style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

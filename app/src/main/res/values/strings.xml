@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Disney_App</string>
+    <string name="app_name">Disney App</string>
+    <string name="category_prefix">  > %1$s</string>
+    <string name="saga_label">Saga : %1$s</string>
 </resources>

@@ -1,23 +1,28 @@
 package fr.isen.savi.disney_app.model
 
-import com.google.gson.annotations.SerializedName
+import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.PropertyName
 
+@IgnoreExtraProperties
 data class Film(
-    @SerializedName("titre")
-    val title: String = "",
+    @get:PropertyName("titre")
+    @set:PropertyName("titre")
+    var title: String = "",
 
-    @SerializedName("annee")
-    val releaseDate: Int = 0,
+    @get:PropertyName("annee")
+    @set:PropertyName("annee")
+    var releaseDate: Int = 0, // bien mettre int car les années sont des chiffres dans mon json
 
-    @SerializedName("genre")
-    val genre: String = "",
+    @get:PropertyName("genre")
+    @set:PropertyName("genre")
+    var genre: String = "",
 
-    @SerializedName("numero")
-    val numero: Int = 0,
+    @get:PropertyName("numero")
+    @set:PropertyName("numero")
+    var numero: Int = 0,
 
-    val id: String = ""
+    var id: String = ""
 ) {
-
     fun getStableId(): String {
         return title.lowercase()
             .let { java.text.Normalizer.normalize(it, java.text.Normalizer.Form.NFD) }

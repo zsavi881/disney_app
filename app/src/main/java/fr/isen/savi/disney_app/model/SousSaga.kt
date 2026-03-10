@@ -1,6 +1,17 @@
 package fr.isen.savi.disney_app.model
 
+import com.google.firebase.database.PropertyName
+
 data class SousSaga(
-    val nom: String = "", // ex: "Saga Skywalker"
-    val films: List<Film> = emptyList()
+    @get:PropertyName("id")
+    @set:PropertyName("id")
+    var id: String = "",
+
+    @get:PropertyName("nom")
+    @set:PropertyName("nom")
+    var nom: String = "",
+
+    @get:PropertyName("films")
+    @set:PropertyName("films")
+    var films: List<Film> = emptyList()
 )
