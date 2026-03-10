@@ -1,15 +1,29 @@
 package fr.isen.savi.disney_app.model
 
+import com.google.gson.annotations.SerializedName
+
 data class Film(
-    val id: String = "",
+    @SerializedName("titre")
     val title: String = "",
-    val universeId: String = "",
-    val universeName: String = "",
-    val saga: String? = null,
-    val category: String? = null,
-    val releaseDate: String = "",
-    val genre: String = "", // Ajouté pour plus de précision
-    val posterUrl: String = "",
-    val synopsis: String = "",
-    val durationMinutes: Int = 0
-)
+
+    @SerializedName("annee")
+    val releaseDate: Int = 0,
+
+    @SerializedName("genre")
+    val genre: String = "",
+
+    @SerializedName("numero")
+    val numero: Int = 0,
+
+    val id: String = ""
+) {
+
+    fun getStableId(): String {
+        return title.lowercase()
+            .let { java.text.Normalizer.normalize(it, java.text.Normalizer.Form.NFD) }
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+            .replace("[^a-z0-9]".toRegex(), "_")
+            .replace("_+".toRegex(), "_")
+            .trim('_')
+    }
+}

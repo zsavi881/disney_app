@@ -1,23 +1,13 @@
 package fr.isen.savi.disney_app.ui.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.isen.savi.disney_app.model.Film
@@ -30,10 +20,9 @@ fun FilmListScreen(
     onFilmClick: (String) -> Unit
 ) {
     val films by filmListViewModel.films.collectAsState()
-    val universeTitle by filmListViewModel.universeTitle.collectAsState()
 
     LaunchedEffect(universeId) {
-        filmListViewModel.loadFilms(universeId)
+        filmListViewModel.loadFilmsByUniverse(universeId)
     }
 
     LazyColumn(
@@ -43,12 +32,12 @@ fun FilmListScreen(
     ) {
         item {
             Text(
-                text = universeTitle.ifBlank { "Films" },
+                text = universeId.replace("_", " ").uppercase(),
                 style = MaterialTheme.typography.headlineMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Films sorted by release date",
+                text = "Liste des films de cet univers",
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -56,52 +45,24 @@ fun FilmListScreen(
         items(films) { film ->
             FilmCard(
                 film = film,
-                onClick = { onFilmClick(film.id) }
+                onClick = { onFilmClick(film.getStableId()) } // Correction ici : getStableId()
             )
         }
     }
 }
 
 @Composable
-fun FilmCard(
-    film: Film,
-    onClick: () -> Unit
-) {
+fun FilmCard(film: Film, onClick: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = film.title,
-                style = MaterialTheme.typography.titleLarge
-            )
-
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = film.title, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Année : ${film.releaseDate}", style = MaterialTheme.typography.bodyMedium)
 
-            Text(
-                text = "Release date: ${film.releaseDate}",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            film.category?.let {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Category: $it",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            film.saga?.let {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Saga: $it",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            // On affiche le genre à la place des anciennes catégories si besoin
+            Text(text = "Genre : ${film.genre}", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

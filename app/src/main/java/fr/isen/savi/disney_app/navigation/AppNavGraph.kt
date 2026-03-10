@@ -71,8 +71,9 @@ fun AppNavGraph() {
         composable(Routes.HOME) {
             UniverseScreen(
                 universeViewModel = universeViewModel,
-                onUniverseClick = { universeId ->
-                    navController.navigate("${Routes.FILMS}/$universeId")
+                onFilmClick = { filmId ->
+                    // On navigue directement vers le détail du film avec son ID stable
+                    navController.navigate("${Routes.FILM_DETAIL}/$filmId")
                 },
                 onProfileClick = {
                     navController.navigate(Routes.PROFILE)
