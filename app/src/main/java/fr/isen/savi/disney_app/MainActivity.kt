@@ -5,9 +5,13 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import fr.isen.savi.disney_app.repository.FirebaseRepository
 import fr.isen.savi.disney_app.navigation.AppNavGraph
 import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,10 +27,14 @@ class MainActivity : ComponentActivity() {
         // -------------------------------------
 
         setContent {
-            DisneyAppTheme {
-                // On appelle le NavGraph qui va gérer l'affichage :
-                // Il commencera par l'écran de Login par défaut.
-                AppNavGraph()
+            var darkMode by remember { mutableStateOf(false) }
+
+
+            DisneyAppTheme(darkTheme = darkMode) {
+                AppNavGraph(
+                    darkMode = darkMode,
+                    onToggleTheme = { darkMode = !darkMode }
+                )
             }
         }
     }

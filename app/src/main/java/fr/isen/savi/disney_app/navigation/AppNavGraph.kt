@@ -3,18 +3,21 @@ package fr.isen.savi.disney_app.navigation
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-
-// On importe tout ce qui est dans screens et viewmodel
-import fr.isen.savi.disney_app.ui.screens.*
-import fr.isen.savi.disney_app.viewmodel.*
+import fr.isen.savi.disney_app.ui.screens.FilmDetailScreen
+import fr.isen.savi.disney_app.ui.screens.FilmListScreen
+import fr.isen.savi.disney_app.ui.screens.LoginScreen
+import fr.isen.savi.disney_app.ui.screens.ProfileScreen
+import fr.isen.savi.disney_app.ui.screens.RegisterScreen
+import fr.isen.savi.disney_app.ui.screens.UniverseScreen
+import fr.isen.savi.disney_app.viewmodel.AuthViewModel
 import fr.isen.savi.disney_app.viewmodel.FilmDetailViewModel
 import fr.isen.savi.disney_app.viewmodel.FilmListViewModel
-import fr.isen.savi.disney_app.ui.screens.FilmDetailScreen
-import fr.isen.savi.disney_app.ui.screens.ProfileScreen
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
+import fr.isen.savi.disney_app.viewmodel.UniverseViewModel
 
 object Routes {
     const val LOGIN = "login"
@@ -26,10 +29,12 @@ object Routes {
 }
 
 @Composable
-fun AppNavGraph() {
+fun AppNavGraph(
+    darkMode: Boolean,
+    onToggleTheme: () -> Unit
+) {
     val navController = rememberNavController()
 
-    // Initialisation des ViewModels
     val authViewModel: AuthViewModel = viewModel()
     val filmListViewModel: FilmListViewModel = viewModel()
     val universeViewModel: UniverseViewModel = viewModel()
@@ -40,7 +45,6 @@ fun AppNavGraph() {
         navController = navController,
         startDestination = Routes.LOGIN
     ) {
-        // Écran Login
         composable(Routes.LOGIN) {
             LoginScreen(
                 authViewModel = authViewModel,
@@ -55,7 +59,6 @@ fun AppNavGraph() {
             )
         }
 
-        // Écran Inscription
         composable(Routes.REGISTER) {
             RegisterScreen(
                 authViewModel = authViewModel,
@@ -67,7 +70,6 @@ fun AppNavGraph() {
             )
         }
 
-        // Écran des Univers
         composable(Routes.HOME) {
             UniverseScreen(
                 universeViewModel = universeViewModel,
@@ -80,7 +82,6 @@ fun AppNavGraph() {
             )
         }
 
-        // Liste des Films
         composable(
             route = "${Routes.FILMS}/{universeId}",
             arguments = listOf(navArgument("universeId") { type = NavType.StringType })
@@ -95,7 +96,6 @@ fun AppNavGraph() {
             )
         }
 
-        // Détail d'un Film
         composable(
             route = "${Routes.FILM_DETAIL}/{filmId}",
             arguments = listOf(navArgument("filmId") { type = NavType.StringType })
@@ -106,6 +106,7 @@ fun AppNavGraph() {
                 filmDetailViewModel = filmDetailViewModel
             )
         }
+
         composable(Routes.PROFILE) {
             ProfileScreen(
                 profileViewModel = profileViewModel,
@@ -114,7 +115,9 @@ fun AppNavGraph() {
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(0)
                     }
-                }
+                },
+                darkMode = darkMode,
+                onToggleTheme = onToggleTheme
             )
         }
     }

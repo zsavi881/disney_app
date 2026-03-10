@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +25,9 @@ import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    darkMode: Boolean,
+    onToggleTheme: () -> Unit
 ) {
     val userProfile by profileViewModel.userProfile.collectAsState()
     val ownedFilms by profileViewModel.ownedFilms.collectAsState()
@@ -60,6 +61,33 @@ fun ProfileScreen(
                 text = userProfile.email,
                 style = MaterialTheme.typography.bodyMedium
             )
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Appearance",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Button(
+                        onClick = onToggleTheme,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            if (darkMode) "Switch to Light Mode"
+                            else "Switch to Dark Mode"
+                        )
+                    }
+                }
+            }
         }
 
         item {
