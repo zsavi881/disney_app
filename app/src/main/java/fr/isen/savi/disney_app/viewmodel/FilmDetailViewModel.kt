@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import fr.isen.savi.disney_app.model.Film
 import fr.isen.savi.disney_app.repository.FirebaseRepository
 import fr.isen.savi.disney_app.repository.AuthRepository
-import fr.isen.savi.disney_app.model.UserFilmStatus
-import fr.isen.savi.disney_app.model.FilmOwnerInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -15,39 +13,48 @@ class FilmDetailViewModel : ViewModel() {
     private val firebaseRepository = FirebaseRepository()
     private val authRepository = AuthRepository()
 
-    // --- ÉTATS (STATES) ---
-
     private val _film = MutableStateFlow<Film?>(null)
     val film: StateFlow<Film?> = _film
 
-    // Pour la liste des gens qui possèdent le film (Point 8 de Zoé)
     private val _owners = MutableStateFlow<List<String>>(emptyList())
     val owners: StateFlow<List<String>> = _owners
 
-    // État pour stocker les statuts du film sous forme de Map (Firebase)
     private val _userStatusMap = MutableStateFlow<Map<String, Any>>(emptyMap())
     val userStatusMap: StateFlow<Map<String, Any>> = _userStatusMap
 
-    // --- FONCTIONS ---
-
     /**
-     * Charge les données du film et le statut de l'utilisateur depuis Firebase
+     * Charge les données du film en utilisant la recherche récursive du Repository
      */
-    fun loadFilm(filmId: String) {
-        Log.d("FilmDetail", "Tentative de chargement pour l'ID : $filmId")
 
-        // 1. Charger les infos du film
-        firebaseRepository.getFilms { allFilms ->
-            val foundFilm = allFilms.find { it.id == filmId }
+    // Dans FilmDetailViewModel.kt
+    fun loadFilm(filmId: String) {
+        Log.d("DEBUG_DETAIL", "Recherche du film avec l'ID : $filmId")
+
+        firebaseRepository.getFilmById(filmId) { foundFilm ->
             if (foundFilm != null) {
                 _film.value = foundFilm
-                Log.d("FilmDetail", "Film trouvé : ${foundFilm.title}")
+                Log.d("DEBUG_DETAIL", "Film trouvé : ${foundFilm.title}")
             } else {
-                Log.e("FilmDetail", "ERREUR : Aucun film avec l'ID '$filmId' dans Firebase.")
+                Log.e("DEBUG_DETAIL", "Film NON TROUVÉ pour l'ID : $filmId")
+            }
+        }
+    }
+
+   /*fun loadFilm(filmId: String) {
+        Log.d("FilmDetail", "Chargement du film ID : $filmId")
+
+        // 1. Charger les infos du film via la nouvelle méthode getFilmById
+        // Cette méthode fouille dans les catégories et sagas pour toi
+        firebaseRepository.getFilmById(filmId) { foundFilm ->
+            if (foundFilm != null) {
+                _film.value = foundFilm
+                Log.d("FilmDetail", "Film trouvé dans la hiérarchie : ${foundFilm.title}")
+            } else {
+                Log.e("FilmDetail", "ERREUR : Impossible de trouver '$filmId' dans le catalogue.")
             }
         }
 
-        // 2. Charger le statut (vu, possédé...) pour l'utilisateur actuel
+        // 2. Charger le statut (vu, possédé...)
         val userId = authRepository.getCurrentUser()?.uid
         if (userId != null) {
             firebaseRepository.getFilmStatus(userId, filmId) { status ->
@@ -55,27 +62,24 @@ class FilmDetailViewModel : ViewModel() {
             }
         }
 
-        // 3. Charger les propriétaires du film (Point 8)
+        // 3. Charger les IDs des propriétaires (Point 8)
         firebaseRepository.getOwnersForFilm(filmId) { ownerList ->
             _owners.value = ownerList
         }
-    }
+    }*/
 
     /**
-     * Met à jour un statut spécifique (ex: "watched" ou "ownPhysical") dans Firebase
+     * Met à jour le statut (ex: "watched") dans Firebase
      */
     fun updateStatus(filmId: String, statusKey: String, value: Boolean) {
         val userId = authRepository.getCurrentUser()?.uid ?: return
 
-        // On prépare la nouvelle map de statuts en local pour une mise à jour rapide de l'UI
         val updatedMap = _userStatusMap.value.toMutableMap()
         updatedMap[statusKey] = value
 
-        // On envoie à Firebase
         firebaseRepository.updateFilmStatus(userId, filmId, updatedMap) { success ->
             if (success) {
                 _userStatusMap.value = updatedMap
-                Log.d("FilmDetail", "Statut mis à jour : $statusKey = $value")
             }
         }
     }

@@ -61,4 +61,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth.ktx)
+    implementation("com.google.code.gson:gson:2.10.1")
 }

@@ -1,36 +1,97 @@
 package fr.isen.savi.disney_app.repository
 
+import android.util.Log
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import fr.isen.savi.disney_app.model.Categorie
 import fr.isen.savi.disney_app.model.Film
-import fr.isen.savi.disney_app.model.MovieData
+import fr.isen.savi.disney_app.model.Franchise
+import fr.isen.savi.disney_app.model.SousSaga
 
 class FirebaseRepository {
     private val database = FirebaseDatabase.getInstance()
-    private val filmsRef = database.getReference("films")
+    private val categoriesRef = database.getReference("categories")
     private val statusRef = database.getReference("user_film_status")
+    private val gson = Gson()
 
     /**
-     * POINT 11 : Injection initiale (à commenter après la première exécution)
+     * RÉCUPÉRATION : Charge toute la hiérarchie (Catégories > Franchises > Sagas > Films)
+     * Utilise la méthode Gson de ton supérieur pour un mapping précis.
      */
-    fun initialPopulate() {
-        MovieData.catalog.forEach { film ->
-            filmsRef.child(film.id).setValue(film)
+    fun getCategories(onResult: (List<Categorie>) -> Unit) {
+        categoriesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val rawValue = snapshot.value
+                val jsonString = gson.toJson(rawValue)
+                val type = object : TypeToken<List<Categorie>>() {}.type
+
+                try {
+                    val categories: List<Categorie> = gson.fromJson(jsonString, type)
+                    onResult(categories)
+                } catch (e: Exception) {
+                    Log.e("FirebaseRepo", "Erreur mapping GSON: ${e.message}")
+                    onResult(emptyList())
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseRepo", "Erreur Database: ${error.message}")
+                onResult(emptyList())
+            }
+        })
+    }
+
+    /**
+     * RECHERCHE : Trouve un film par son titre (ou ID généré) dans toute l'arborescence.
+     * Très important pour ton FilmDetailViewModel.
+     */
+    fun getFilmById(filmId: String, onResult: (Film?) -> Unit) {
+        getCategories { categories ->
+            var foundFilm: Film? = null
+
+            Log.d("REPO_SEARCH", "Début de recherche récursive pour : $filmId")
+
+            for (cat in categories) {
+                for (franchise in cat.franchises) {
+                    // 1. Chercher dans les films directs de la franchise
+                    franchise.films?.let { filmsDirects ->
+                        foundFilm = filmsDirects.find { it.getStableId() == filmId }
+                    }
+
+                    if (foundFilm != null) {
+                        Log.d("REPO_SEARCH", "Trouvé dans les films directs de ${franchise.nom}")
+                        break
+                    }
+
+                    // 2. Chercher dans les sous-sagas
+                    franchise.sous_sagas?.forEach { saga ->
+                        val filmInSaga = saga.films.find { it.getStableId() == filmId }
+                        if (filmInSaga != null) {
+                            foundFilm = filmInSaga
+                            Log.d("REPO_SEARCH", "Trouvé dans la saga ${saga.nom}")
+                            return@forEach
+                        }
+                    }
+
+                    if (foundFilm != null) break
+                }
+                if (foundFilm != null) break
+            }
+
+            if (foundFilm == null) {
+                Log.e("REPO_SEARCH", "ÉCHEC : Film non trouvé après avoir parcouru ${categories.size} catégories")
+            }
+
+            onResult(foundFilm)
         }
     }
 
     /**
-     * POINT 5 : Récupérer les films
-     */
-    fun getFilms(onResult: (List<Film>) -> Unit) {
-        filmsRef.get().addOnSuccessListener { snapshot ->
-            val list = snapshot.children.mapNotNull { it.getValue(Film::class.java) }
-            onResult(list)
-        }
-    }
-
-    /**
-     * POINT 7 : Sauvegarder le statut d'un film pour un utilisateur
-     * @param status Un dictionnaire type: ["watched" to true, "ownPhysical" to false...]
+     * STATUTS : Sauvegarder les préférences utilisateur (Watched, WantToWatch, Own)
      */
     fun updateFilmStatus(userId: String, filmId: String, status: Map<String, Any>, onComplete: (Boolean) -> Unit) {
         statusRef.child(userId).child(filmId).setValue(status)
@@ -38,7 +99,7 @@ class FirebaseRepository {
     }
 
     /**
-     * POINT 7 : Récupérer le statut d'un film pour l'utilisateur connecté
+     * STATUTS : Récupérer les préférences pour un film donné
      */
     fun getFilmStatus(userId: String, filmId: String, onResult: (Map<String, Any>?) -> Unit) {
         statusRef.child(userId).child(filmId).get().addOnSuccessListener { snapshot ->
@@ -49,16 +110,14 @@ class FirebaseRepository {
     }
 
     /**
-     * POINT 8 : Récupérer tous les utilisateurs qui possèdent un film précis
-     * Cette fonction parcourt tous les statuts pour trouver ceux qui ont "ownPhysical" = true
+     * PROPRIÉTAIRES : Trouve tous les utilisateurs possédant le film physiquement
      */
     fun getOwnersForFilm(filmId: String, onResult: (List<String>) -> Unit) {
         statusRef.get().addOnSuccessListener { snapshot ->
             val owners = mutableListOf<String>()
             snapshot.children.forEach { userSnapshot ->
                 val userId = userSnapshot.key
-                val filmStatus = userSnapshot.child(filmId)
-                if (filmStatus.child("ownPhysical").value == true) {
+                if (userSnapshot.child(filmId).child("ownPhysical").value == true) {
                     userId?.let { owners.add(it) }
                 }
             }

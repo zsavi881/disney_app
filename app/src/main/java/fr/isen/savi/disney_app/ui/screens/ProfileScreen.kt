@@ -1,23 +1,10 @@
 package fr.isen.savi.disney_app.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.isen.savi.disney_app.model.Film
@@ -28,15 +15,27 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     onLogout: () -> Unit
 ) {
+    // Observation des états du ViewModel
     val userProfile by profileViewModel.userProfile.collectAsState()
     val ownedFilms by profileViewModel.ownedFilms.collectAsState()
     val watchedFilms by profileViewModel.watchedFilms.collectAsState()
     val wishlistFilms by profileViewModel.wishlistFilms.collectAsState()
     val toGetRidFilms by profileViewModel.toGetRidFilms.collectAsState()
 
+    // Chargement automatique du profil au lancement de l'écran
     LaunchedEffect(Unit) {
-        profileViewModel.loadProfile("1")
+        profileViewModel.loadProfile() // Plus besoin de passer "1", le VM gère l'ID Firebase
     }
+
+    // Gestion de l'état de chargement
+    if (userProfile == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    val profile = userProfile!!
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -45,92 +44,80 @@ fun ProfileScreen(
     ) {
         item {
             Text(
-                text = "Profile",
+                text = "Mon Profil Disney",
                 style = MaterialTheme.typography.headlineMedium
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = userProfile.displayName,
+                text = profile.displayName,
                 style = MaterialTheme.typography.titleLarge
             )
 
             Text(
-                text = userProfile.email,
-                style = MaterialTheme.typography.bodyMedium
+                text = profile.email,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-        }
 
-        item {
-            FilmSection(
-                title = "Owned films",
-                films = ownedFilms
-            )
-        }
+            Spacer(modifier = Modifier.height(16.dp))
 
-        item {
-            FilmSection(
-                title = "Watched films",
-                films = watchedFilms
-            )
-        }
-
-        item {
-            FilmSection(
-                title = "Want to watch",
-                films = wishlistFilms
-            )
-        }
-
-        item {
-            FilmSection(
-                title = "Want to get rid of",
-                films = toGetRidFilms
-            )
-        }
-
-        item {
             Button(
                 onClick = onLogout,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Logout")
+                Text("Se déconnecter")
             }
+        }
+
+        // Section : Mes films possédés
+        item {
+            FilmSection(title = "Ma Collection (DVD/Blu-ray)", films = ownedFilms)
+        }
+
+        // Section : Films vus
+        item {
+            FilmSection(title = "Films déjà vus", films = watchedFilms)
+        }
+
+        // Section : Liste de souhaits
+        item {
+            FilmSection(title = "Ma liste à voir", films = wishlistFilms)
+        }
+
+        // Section : À se débarrasser
+        item {
+            FilmSection(title = "Films dont je souhaite me séparer", films = toGetRidFilms)
         }
     }
 }
 
 @Composable
-fun FilmSection(
-    title: String,
-    films: List<Film>
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+fun FilmSection(title: String, films: List<Film>) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             if (films.isEmpty()) {
                 Text(
-                    text = "No films",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "Aucun film dans cette catégorie",
+                    style = MaterialTheme.typography.bodySmall
                 )
             } else {
                 films.forEach { film ->
                     Text(
                         text = "• ${film.title}",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(vertical = 2.dp)
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
                 }
             }
         }
