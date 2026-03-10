@@ -1,13 +1,17 @@
 package fr.isen.savi.disney_app.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import fr.isen.savi.disney_app.R
 import fr.isen.savi.disney_app.viewmodel.AuthViewModel
 
 @Composable
@@ -33,8 +37,17 @@ fun RegisterScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Image(
+            painter = painterResource(id = R.drawable.logo_disney_app),
+            contentDescription = "Disney App Logo",
+            modifier = Modifier
+                .height(140.dp)
+        )
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text("Register", style = MaterialTheme.typography.headlineMedium)
 

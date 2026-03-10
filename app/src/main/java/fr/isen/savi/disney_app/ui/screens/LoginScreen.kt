@@ -11,6 +11,12 @@ import fr.isen.savi.disney_app.viewmodel.AuthViewModel
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
+
+//pour logo
+import androidx.compose.foundation.Image
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import fr.isen.savi.disney_app.R
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
@@ -34,8 +40,16 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_disney_app),
+            contentDescription = "Disney App Logo",
+            modifier = Modifier
+                .height(140.dp)
+        )
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text("Login", style = MaterialTheme.typography.headlineMedium)
 
