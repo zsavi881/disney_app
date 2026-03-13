@@ -93,6 +93,12 @@ fun FilmDetailScreen(
             onClick = { filmDetailViewModel.updateStatus(filmId, "ownPhysical", !(userStatus["ownPhysical"] == true)) }
         )
 
+        StatusButton(
+            label = "Je le veux",
+            isActive = userStatus["wantedPhysical"] == true,
+            onClick = { filmDetailViewModel.updateStatus(filmId, "wantedPhysical", !(userStatus["wantedPhysical"] == true)) }
+        )
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(text = "Propriétaires à proximité", style = MaterialTheme.typography.titleLarge)

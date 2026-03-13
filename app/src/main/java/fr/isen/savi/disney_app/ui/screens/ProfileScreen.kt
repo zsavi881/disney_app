@@ -21,6 +21,7 @@ fun ProfileScreen(
     val ownedFilms by profileViewModel.ownedFilms.collectAsState()
     val watchedFilms by profileViewModel.watchedFilms.collectAsState()
     val wishlistFilms by profileViewModel.wishlistFilms.collectAsState()
+    val wantedlistFilms by profileViewModel.wantedlistFilms.collectAsState()
 
     val isDarkMode by profileViewModel.isDarkMode.collectAsState()
 
@@ -87,6 +88,7 @@ fun ProfileScreen(
         item { FilmSection(title = "Ma Collection (DVD/Blu-ray)", films = ownedFilms) }
         item { FilmSection(title = "Films déjà vus", films = watchedFilms) }
         item { FilmSection(title = "Ma liste à voir", films = wishlistFilms) }
+        item { FilmSection(title = "A acheter", films = wantedlistFilms) }
     }
 }
 

@@ -27,7 +27,9 @@ class ProfileViewModel : ViewModel() {
 
     private val _wishlistFilms = MutableStateFlow<List<Film>>(emptyList())
     val wishlistFilms: StateFlow<List<Film>> = _wishlistFilms
-
+    
+    private val _wantedlistFilms = MutableStateFlow<List<Film>>(emptyList())
+    val wantedlistFilms: StateFlow<List<Film>> = _wantedlistFilms
     fun toggleDarkMode() {
         _isDarkMode.value = !_isDarkMode.value
     }
@@ -56,6 +58,7 @@ class ProfileViewModel : ViewModel() {
             val owned = mutableListOf<Film>()
             val watched = mutableListOf<Film>()
             val wishlist = mutableListOf<Film>()
+            val wantedlist = mutableListOf<Film>()
 
             allFilms.forEach { film ->
                 val stableId = film.getStableId()
@@ -64,11 +67,13 @@ class ProfileViewModel : ViewModel() {
                         if (statusMap["ownPhysical"] == true) owned.add(film)
                         if (statusMap["watched"] == true) watched.add(film)
                         if (statusMap["wantToWatch"] == true) wishlist.add(film)
+                        if (statusMap["wantedPhysical"] == true) wantedlist.add(film)
                     }
 
                     _ownedFilms.value = owned.toList()
                     _watchedFilms.value = watched.toList()
                     _wishlistFilms.value = wishlist.toList()
+                    _wantedlistFilms.value = wantedlist.toList()
                 }
             }
         }
