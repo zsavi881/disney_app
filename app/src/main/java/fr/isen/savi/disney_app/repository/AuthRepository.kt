@@ -4,7 +4,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 class AuthRepository {
-    // getInstance() ne prend pas d'arguments ici
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     // Créer un compte

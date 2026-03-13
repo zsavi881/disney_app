@@ -9,7 +9,6 @@ import fr.isen.savi.disney_app.model.Categorie
 import fr.isen.savi.disney_app.model.Film
 
 class FirebaseRepository {
-    // L'instance récupère l'URL via le google-services.json
     private val database = FirebaseDatabase.getInstance()
     private val categoriesRef = database.getReference("categories")
     private val statusRef = database.getReference("user_film_status")
@@ -32,7 +31,6 @@ class FirebaseRepository {
         }
     }
 
-    // 2. Trouver un film par son ID (utilisé par FilmDetailViewModel)
     fun getFilmById(filmId: String, onResult: (Film?) -> Unit) {
         getCategories { categories ->
             var foundFilm: Film? = null
@@ -58,7 +56,6 @@ class FirebaseRepository {
         }
     }
 
-    // 3. Récupérer le statut (Vu, Possédé...) d'un film pour un utilisateur
     fun getFilmStatus(userId: String, filmId: String, onResult: (Map<String, Any>?) -> Unit) {
         statusRef.child(userId).child(filmId).get().addOnSuccessListener { snapshot ->
             @Suppress("UNCHECKED_CAST")
@@ -69,13 +66,11 @@ class FirebaseRepository {
         }
     }
 
-    // 4. Mettre à jour le statut
     fun updateFilmStatus(userId: String, filmId: String, status: Map<String, Any>, onComplete: (Boolean) -> Unit) {
         statusRef.child(userId).child(filmId).updateChildren(status)
             .addOnCompleteListener { onComplete(it.isSuccessful) }
     }
 
-    // 5. Voir qui possède le film (pour la section "Propriétaires")
     fun getOwnersForFilm(filmId: String, onResult: (List<String>) -> Unit) {
         statusRef.get().addOnSuccessListener { snapshot ->
             val owners = mutableListOf<String>()

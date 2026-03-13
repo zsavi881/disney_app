@@ -45,7 +45,7 @@ fun FilmListScreen(
         items(films) { film ->
             FilmCard(
                 film = film,
-                onClick = { onFilmClick(film.getStableId()) } // Correction ici : getStableId()
+                onClick = { onFilmClick(film.getStableId()) }
             )
         }
     }
@@ -61,7 +61,6 @@ fun FilmCard(film: Film, onClick: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Année : ${film.releaseDate}", style = MaterialTheme.typography.bodyMedium)
 
-            // On affiche le genre à la place des anciennes catégories si besoin
             Text(text = "Genre : ${film.genre}", style = MaterialTheme.typography.bodySmall)
         }
     }

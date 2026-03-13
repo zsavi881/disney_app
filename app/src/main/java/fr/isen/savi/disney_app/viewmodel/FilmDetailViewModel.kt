@@ -21,12 +21,12 @@ class FilmDetailViewModel : ViewModel() {
     val owners: StateFlow<List<String>> = _owners
 
     fun loadFilm(filmId: String) {
-        // 1. Charger les données du film (Recherche récursive dans le JSON)
+        //  Charger les données du film
         repository.getFilmById(filmId) { foundFilm ->
             _film.value = foundFilm
         }
 
-        // 2. Charger le statut de l'utilisateur actuel (Vu, Possédé, etc.)
+        // Charger le statut de l'utilisateur actuel
         val userId = auth.currentUser?.uid
         if (userId != null) {
             repository.getFilmStatus(userId, filmId) { status ->
@@ -34,7 +34,7 @@ class FilmDetailViewModel : ViewModel() {
             }
         }
 
-        // 3. Charger la liste des propriétaires à proximité
+        // Charger la liste des propriétaires à proximité
         repository.getOwnersForFilm(filmId) { ownerList ->
             _owners.value = ownerList
         }
@@ -43,17 +43,13 @@ class FilmDetailViewModel : ViewModel() {
     fun updateStatus(filmId: String, key: String, value: Any) {
         val userId = auth.currentUser?.uid ?: return
 
-        // Création du nouveau statut (on part de l'existant ou d'un nouveau map)
         val currentStatus = _userStatusMap.value.toMutableMap()
         currentStatus[key] = value
 
-        // Mise à jour locale pour que les boutons changent d'aspect instantanément
         _userStatusMap.value = currentStatus
 
-        // Envoi au repository qui va faire le updateChildren sur Firebase
         repository.updateFilmStatus(userId, filmId, currentStatus) { success ->
             if (!success) {
-                // Si ça échoue, on pourrait recharger l'ancien état ici
                 loadFilm(filmId)
             }
         }

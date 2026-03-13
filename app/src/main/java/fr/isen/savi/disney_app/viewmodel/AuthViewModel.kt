@@ -8,7 +8,6 @@ import fr.isen.savi.disney_app.repository.AuthRepository
 
 class AuthViewModel : ViewModel() {
 
-    // On initialise ton repository ici
     private val authRepository = AuthRepository()
 
     private val _user = MutableStateFlow<UserProfile?>(null)
@@ -58,8 +57,6 @@ class AuthViewModel : ViewModel() {
         authRepository.signUp(email, password) { success, errorMessage ->
             _isLoading.value = false
             if (success) {
-                // Note : Firebase Auth ne stocke pas le "name" par défaut au signUp,
-                // mais on l'affiche pour l'UI de Zoé
                 val firebaseUser = authRepository.getCurrentUser()
                 _user.value = UserProfile(
                     uid = firebaseUser?.uid ?: "",

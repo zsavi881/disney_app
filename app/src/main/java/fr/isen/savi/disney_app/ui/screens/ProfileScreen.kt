@@ -17,16 +17,13 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     onLogout: () -> Unit
 ) {
-    // Collecte des états du ViewModel
     val userProfile by profileViewModel.userProfile.collectAsState()
     val ownedFilms by profileViewModel.ownedFilms.collectAsState()
     val watchedFilms by profileViewModel.watchedFilms.collectAsState()
     val wishlistFilms by profileViewModel.wishlistFilms.collectAsState()
 
-    // On récupère l'état du Dark Mode directement depuis le ViewModel
     val isDarkMode by profileViewModel.isDarkMode.collectAsState()
 
-    // Chargement des données au démarrage
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()
     }
@@ -59,7 +56,6 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- SECTION RÉGLAGES (DARK MODE) ---
             Text(text = "Réglages", style = MaterialTheme.typography.titleMedium)
             Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                 Row(
@@ -88,7 +84,6 @@ fun ProfileScreen(
             }
         }
 
-        // Sections de films
         item { FilmSection(title = "Ma Collection (DVD/Blu-ray)", films = ownedFilms) }
         item { FilmSection(title = "Films déjà vus", films = watchedFilms) }
         item { FilmSection(title = "Ma liste à voir", films = wishlistFilms) }

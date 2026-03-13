@@ -28,7 +28,6 @@ fun UniverseScreen(
     onProfileClick: () -> Unit
 ) {
     val categories by universeViewModel.categories.collectAsState()
-    // On utilise la liste du ViewModel pour que l'état survive à la rotation du téléphone
     val expandedItems = universeViewModel.expandedItems
 
     Scaffold(
@@ -51,7 +50,7 @@ fun UniverseScreen(
             LazyColumn(modifier = Modifier.padding(padding).fillMaxSize()) {
                 categories.forEach { categorie ->
 
-                    // --- NIVEAU 1 : CATÉGORIE ---
+                    // catégorie
                     item(key = "cat_${categorie.categorie}") {
                         val isExpanded = expandedItems.contains(categorie.categorie)
                         ListItem(
@@ -68,11 +67,9 @@ fun UniverseScreen(
                         )
                     }
 
-                    // On n'affiche les franchises que si la catégorie est dépliée
                     if (expandedItems.contains(categorie.categorie)) {
                         categorie.franchises.forEach { franchise ->
 
-                            // --- NIVEAU 2 : FRANCHISE ---
                             item(key = "fran_${franchise.nom}") {
                                 val isExpanded = expandedItems.contains(franchise.nom)
                                 ListItem(
@@ -90,10 +87,9 @@ fun UniverseScreen(
                                 )
                             }
 
-                            // On n'affiche les films/sagas que si la franchise est dépliée
                             if (expandedItems.contains(franchise.nom)) {
 
-                                // Films directs de la franchise
+                                // Ffilm
                                 items(franchise.films) { film ->
                                     ListItem(
                                         headlineContent = { Text(film.title) },
@@ -104,7 +100,7 @@ fun UniverseScreen(
                                     )
                                 }
 
-                                // --- NIVEAU 3 : SOUS-SAGAS ---
+                                // sous saga
                                 franchise.sous_sagas.forEach { saga ->
                                     item(key = "saga_${saga.id}") {
                                         val isExpanded = expandedItems.contains(saga.id)

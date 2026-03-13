@@ -19,14 +19,13 @@ fun FilmDetailScreen(
     val userStatus by filmDetailViewModel.userStatusMap.collectAsState()
     val owners by filmDetailViewModel.owners.collectAsState()
 
-    // On utilise bien loadFilm qui fait maintenant la recherche récursive
     LaunchedEffect(filmId) {
         filmDetailViewModel.loadFilm(filmId)
     }
 
     if (film == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-            CircularProgressIndicator() // Plus sympa qu'un texte "not found" pendant le chargement
+            CircularProgressIndicator()
         }
         return
     }
@@ -48,7 +47,6 @@ fun FilmDetailScreen(
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
-                // On affiche les infos disponibles dans le JSON du prof
                 Text(
                     text = "Année de sortie : ${currentFilm.releaseDate}",
                     style = MaterialTheme.typography.bodyLarge
@@ -70,25 +68,21 @@ fun FilmDetailScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // --- SECTION STATUTS (MON COMPTE) ---
         Text(text = "Ma collection", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Bouton Vu
         StatusButton(
             label = "Vu",
             isActive = userStatus["watched"] == true,
             onClick = { filmDetailViewModel.updateStatus(filmId, "watched", !(userStatus["watched"] == true)) }
         )
 
-        // Bouton Liste de souhaits
         StatusButton(
             label = "Dans ma liste à voir",
             isActive = userStatus["wantToWatch"] == true,
             onClick = { filmDetailViewModel.updateStatus(filmId, "wantToWatch", !(userStatus["wantToWatch"] == true)) }
         )
 
-        // Bouton Possession Physique
         StatusButton(
             label = "Je possède le DVD/Blu-ray",
             isActive = userStatus["ownPhysical"] == true,
@@ -97,7 +91,6 @@ fun FilmDetailScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // --- SECTION PROPRIÉTAIRES ---
         Text(text = "Propriétaires à proximité", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(12.dp))
 

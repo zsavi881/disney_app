@@ -11,12 +11,9 @@ class UniverseViewModel : ViewModel() {
 
     private val firebaseRepository = FirebaseRepository()
 
-    // 1. On remplace la liste d'Univers par la liste des Catégories
     private val _categories = MutableStateFlow<List<Categorie>>(emptyList())
     val categories: StateFlow<List<Categorie>> = _categories
 
-    // 2. Liste des éléments actuellement dépliés (survit à la rotation car dans le ViewModel)
-    // On stocke les noms (String) des catégories/franchises/sagas ouvertes
     val expandedItems = mutableStateListOf<String>()
 
     init {
@@ -24,7 +21,6 @@ class UniverseViewModel : ViewModel() {
     }
 
     private fun loadData() {
-        // On utilise la nouvelle fonction de ton Repository propre
         firebaseRepository.getCategories { allCategories ->
             _categories.value = allCategories
         }
