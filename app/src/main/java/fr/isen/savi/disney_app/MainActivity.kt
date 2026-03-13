@@ -5,13 +5,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.isen.savi.disney_app.ui.activities.UniverseDetailActivity
 import fr.isen.savi.disney_app.ui.screens.LoginScreen
-import fr.isen.savi.disney_app.ui.theme.Disney_AppTheme
+import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
 import fr.isen.savi.disney_app.viewmodel.AuthViewModel
+import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
 
 class MainActivity : ComponentActivity() {
+    val profileViewModel = ProfileViewModel() // permet d'nstancier la classe en gros ce que je veux faire avec cette classe doi etre ennregistre quelque part
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -23,8 +27,10 @@ class MainActivity : ComponentActivity() {
         }
 
         enableEdgeToEdge()
-        setContent {
-            Disney_AppTheme {
+        setContent { // collectAsState ne dois pas etre dans oncreate mais ici car onCreate s’exécute une seule fois quand l’Activity est créée
+                    //setContent contient l’UI Compose donc être recomposée à chaque changement d’état utile pour un boutton dark mode (a peine)
+            val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+            DisneyAppTheme(darkTheme = isDarkMode) {
                 val authViewModel: AuthViewModel = viewModel()
 
                 LoginScreen(

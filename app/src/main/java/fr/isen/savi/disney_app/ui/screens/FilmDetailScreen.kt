@@ -9,15 +9,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.isen.savi.disney_app.viewmodel.FilmDetailViewModel
+import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
+import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
 
 @Composable
 fun FilmDetailScreen(
     filmId: String,
     filmDetailViewModel: FilmDetailViewModel
 ) {
+    val profileViewModel = ProfileViewModel()
     val film by filmDetailViewModel.film.collectAsState()
     val userStatus by filmDetailViewModel.userStatusMap.collectAsState()
     val owners by filmDetailViewModel.owners.collectAsState()
+    val isDarkMode by profileViewModel.isDarkMode.collectAsState()
 
     LaunchedEffect(filmId) {
         filmDetailViewModel.loadFilm(filmId)
