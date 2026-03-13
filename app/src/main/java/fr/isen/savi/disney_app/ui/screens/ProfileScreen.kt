@@ -86,10 +86,38 @@ fun ProfileScreen(
             }
         }
 
-        item { FilmSection(title = "Ma Collection (DVD/Blu-ray)", films = ownedFilms, profileViewModel = profileViewModel) }
-        item { FilmSection(title = "Films déjà vus", films = watchedFilms, profileViewModel = profileViewModel) }
-        item { FilmSection(title = "Ma liste à voir", films = wishlistFilms, profileViewModel = profileViewModel) }
-        item { FilmSection(title = "A acheter", films = wantedlistFilms, profileViewModel = profileViewModel) }
+        item {
+            FilmSection(
+                title = "Ma Collection (DVD/Blu-ray)",
+                films = ownedFilms,
+                profileViewModel = profileViewModel,
+                fieldToRemove = "ownPhysical"
+            )
+        }
+        item {
+            FilmSection(
+                title = "Films déjà vus",
+                films = watchedFilms,
+                profileViewModel = profileViewModel,
+                fieldToRemove = "watched"
+            )
+        }
+        item {
+            FilmSection(
+                title = "Ma liste à voir",
+                films = wishlistFilms,
+                profileViewModel = profileViewModel,
+                fieldToRemove = "wantToWatch"
+            )
+        }
+        item {
+            FilmSection(
+                title = "A acheter",
+                films = wantedlistFilms,
+                profileViewModel = profileViewModel,
+                fieldToRemove = "wantedPhysical"
+            )
+        }
     }
 }
 
@@ -97,7 +125,8 @@ fun ProfileScreen(
 fun FilmSection(
     title: String,
     films: List<Film>,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    fieldToRemove: String
 ) {
     var selectedFilm by remember { mutableStateOf<Film?>(null) }
 
@@ -144,7 +173,7 @@ fun FilmSection(
                                         val userId = profileViewModel.userProfile.value?.uid ?: return@clickable
                                         val filmId = film.getStableId()
 
-                                        profileViewModel.deleteFilm(userId, filmId)
+                                        profileViewModel.removeFilmFromSection(userId, filmId, fieldToRemove)
                                         selectedFilm = null
                                     }
                                     .padding(start = 16.dp, top = 4.dp, bottom = 4.dp)

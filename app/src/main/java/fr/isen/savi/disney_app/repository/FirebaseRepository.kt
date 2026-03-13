@@ -90,4 +90,14 @@ class FirebaseRepository {
             onResult(emptyList())
         }
     }
+    fun updateSingleFilmField(
+        userId: String,
+        filmId: String,
+        field: String,
+        value: Boolean,
+        onComplete: (Boolean) -> Unit
+    ) {
+        statusRef.child(userId).child(filmId).child(field).setValue(value)
+            .addOnCompleteListener { onComplete(it.isSuccessful) }
+    }
 }

@@ -96,4 +96,11 @@ class ProfileViewModel : ViewModel() {
             }
         }
     }
+    fun removeFilmFromSection(userId: String, filmId: String, field: String) {
+        firebaseRepository.updateSingleFilmField(userId, filmId, field, false) { success ->
+            if (success) {
+                loadProfile()
+            }
+        }
+    }
 }
