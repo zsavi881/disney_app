@@ -86,27 +86,43 @@ fun ProfileScreen(
             }
         }
 
-        item { FilmSection(title = "Ma Collection (DVD/Blu-ray)", films = ownedFilms) }
-        item { FilmSection(title = "Films déjà vus", films = watchedFilms) }
-        item { FilmSection(title = "Ma liste à voir", films = wishlistFilms) }
-        item { FilmSection(title = "A acheter", films = wantedlistFilms) }
+        item { FilmSection(title = "Ma Collection (DVD/Blu-ray)", films = ownedFilms, profileViewModel = profileViewModel) }
+        item { FilmSection(title = "Films déjà vus", films = watchedFilms, profileViewModel = profileViewModel) }
+        item { FilmSection(title = "Ma liste à voir", films = wishlistFilms, profileViewModel = profileViewModel) }
+        item { FilmSection(title = "A acheter", films = wantedlistFilms, profileViewModel = profileViewModel) }
     }
 }
 
 @Composable
-fun FilmSection(title: String, films: List<Film>) {
-    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-    )) {
+fun FilmSection(
+    title: String,
+    films: List<Film>,
+    profileViewModel: ProfileViewModel
+) {
+    var selectedFilm by remember { mutableStateOf<Film?>(null) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = title, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
+
             if (films.isEmpty()) {
-                Text(text = "Aucun film répertorié", style = MaterialTheme.typography.bodySmall)
+                Text(
+                    text = "Aucun film répertorié",
+                    style = MaterialTheme.typography.bodySmall
+                )
             } else {
                 films.forEach { film ->
-                    var selectedFilm by remember { mutableStateOf<Film?>(null) }
-                    val profileViewModel = ProfileViewModel()
                     Column {
                         Text(
                             text = "• ${film.title}",
@@ -121,18 +137,21 @@ fun FilmSection(title: String, films: List<Film>) {
                         if (selectedFilm == film) {
                             Text(
                                 text = "supprimer",
+                                color = MaterialTheme.colorScheme.error,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        //a voir
-                                    }
-                                    .padding(vertical = 4.dp)
-                            )
+                                        val userId = profileViewModel.userProfile.value?.uid ?: return@clickable
+                                        val filmId = film.getStableId()
 
+                                        profileViewModel.deleteFilm(userId, filmId)
+                                        selectedFilm = null
+                                    }
+                                    .padding(start = 16.dp, top = 4.dp, bottom = 4.dp)
+                            )
                         }
                     }
                 }
-
             }
         }
     }

@@ -89,4 +89,11 @@ class ProfileViewModel : ViewModel() {
 
         onSuccess()
     }
+    fun deleteFilm(userId: String, filmId: String) {
+        firebaseRepository.deleteFilm(userId, filmId) { success ->
+            if (success) {
+                loadProfile()
+            }
+        }
+    }
 }
