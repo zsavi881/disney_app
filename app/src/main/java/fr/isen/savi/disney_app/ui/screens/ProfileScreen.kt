@@ -1,5 +1,6 @@
 package fr.isen.savi.disney_app.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -104,8 +105,34 @@ fun FilmSection(title: String, films: List<Film>) {
                 Text(text = "Aucun film répertorié", style = MaterialTheme.typography.bodySmall)
             } else {
                 films.forEach { film ->
-                    Text(text = "• ${film.title}", style = MaterialTheme.typography.bodyMedium)
+                    var selectedFilm by remember { mutableStateOf<Film?>(null) }
+                    val profileViewModel = ProfileViewModel()
+                    Column {
+                        Text(
+                            text = "• ${film.title}",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    selectedFilm = if (selectedFilm == film) null else film
+                                }
+                                .padding(vertical = 4.dp)
+                        )
+
+                        if (selectedFilm == film) {
+                            Text(
+                                text = "supprimer",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        //a voir
+                                    }
+                                    .padding(vertical = 4.dp)
+                            )
+
+                        }
+                    }
                 }
+
             }
         }
     }
