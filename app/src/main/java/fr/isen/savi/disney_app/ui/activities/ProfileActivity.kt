@@ -12,19 +12,20 @@ import fr.isen.savi.disney_app.MainActivity
 import fr.isen.savi.disney_app.ui.screens.ProfileScreen
 import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
+import fr.isen.savi.disney_app.BaseActivity
 
-class ProfileActivity : ComponentActivity() {
+class ProfileActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
         //val profileViewModel = ProfileViewModel()//instencie dans onCreate
-        setContent {
+        setAppContent {
             val profileViewModel: ProfileViewModel = viewModel()// instencie dans Set
 
-            val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+            //val isDarkMode by profileViewModel.isDarkMode.collectAsState()
 
-            DisneyAppTheme(darkTheme = isDarkMode) {
+           // DisneyAppTheme(darkTheme = isDarkMode) {
                 ProfileScreen(
                     profileViewModel = profileViewModel,
                     onLogout = {
@@ -34,7 +35,7 @@ class ProfileActivity : ComponentActivity() {
                         finish()
                     }
                 )
-            }
+            //}
         }
     }
 }

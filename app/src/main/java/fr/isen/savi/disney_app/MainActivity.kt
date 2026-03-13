@@ -33,8 +33,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent { // collectAsState ne dois pas etre dans oncreate mais ici car onCreate s’exécute une seule fois quand l’Activity est créée
                     //setContent contient l’UI Compose donc être recomposée à chaque changement d’état utile pour un boutton dark mode (a peine)
-            val isDarkMode by profileViewModel.isDarkMode.collectAsState()
-            DisneyAppTheme(darkTheme = isDarkMode) {
+            //val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+           // DisneyAppTheme(darkTheme = isDarkMode) {
                 val authViewModel: AuthViewModel = viewModel()
 
                 val state: MutableState<Boolean> = remember { mutableStateOf(false) }
@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
                         finish()
                     }
                 }
-            }
+            //}
         }
     }
 }

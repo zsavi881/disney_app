@@ -14,23 +14,26 @@ import fr.isen.savi.disney_app.ui.screens.RegisterScreen
 import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
 import fr.isen.savi.disney_app.viewmodel.AuthViewModel
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
+import fr.isen.savi.disney_app.BaseActivity
 
-class RegisterActivity : ComponentActivity() {
+
+
+class RegisterActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Active l'affichage plein écran (Edge-to-Edge)
         enableEdgeToEdge()
 
-        setContent {
+        setAppContent {
             // 1. Initialisation du ViewModel
             val profileViewModel: ProfileViewModel = viewModel()
             val authViewModel: AuthViewModel = viewModel()
             // 2. Observation de l'état du thème (Dark Mode)
             // On utilise "by" pour déléguer l'état et simplifier l'usage de isDarkMode
-            val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+            //val isDarkMode by profileViewModel.isDarkMode.collectAsState()
 
             // 3. Application du thème avec le paramètre correct
-            DisneyAppTheme(darkTheme = isDarkMode) {
+            //DisneyAppTheme(darkTheme = isDarkMode) {
                 ProfileScreen(
                     profileViewModel = profileViewModel,
                     onLogout = {
@@ -53,7 +56,7 @@ class RegisterActivity : ComponentActivity() {
                     startActivity(intent)
                     finish()
                 }
-            }
+           // }
         }
     }
 }

@@ -10,17 +10,18 @@ import fr.isen.savi.disney_app.ui.screens.FilmDetailScreen
 import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
 import fr.isen.savi.disney_app.viewmodel.FilmDetailViewModel
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
+import fr.isen.savi.disney_app.BaseActivity
 
-class FilmDetailActivity : ComponentActivity() {
+class FilmDetailActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val profileViewModel = ProfileViewModel()//instencier
 
         val filmId = intent.getStringExtra("film_id") ?: ""
 
-        setContent {
-            val isDarkMode by profileViewModel.isDarkMode.collectAsState()
-            DisneyAppTheme(darkTheme = isDarkMode) {
+        setAppContent {
+            //val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+            //DisneyAppTheme(darkTheme = isDarkMode) {
                 val detailViewModel: FilmDetailViewModel = viewModel()
 
 
@@ -28,7 +29,7 @@ class FilmDetailActivity : ComponentActivity() {
                     filmId = filmId,
                     filmDetailViewModel = detailViewModel
                 )
-            }
+          //  }
         }
     }
 }

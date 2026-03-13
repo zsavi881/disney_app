@@ -7,7 +7,7 @@ import fr.isen.savi.disney_app.repository.FirebaseRepository
 import fr.isen.savi.disney_app.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-
+import fr.isen.savi.disney_app.ui.theme.ThemeState
 class ProfileViewModel : ViewModel() {
 
     private val firebaseRepository = FirebaseRepository()
@@ -15,9 +15,6 @@ class ProfileViewModel : ViewModel() {
 
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile
-
-    private val _isDarkMode = MutableStateFlow(false)
-    val isDarkMode: StateFlow<Boolean> = _isDarkMode
 
     private val _ownedFilms = MutableStateFlow<List<Film>>(emptyList())
     val ownedFilms: StateFlow<List<Film>> = _ownedFilms
@@ -31,7 +28,7 @@ class ProfileViewModel : ViewModel() {
     private val _wantedlistFilms = MutableStateFlow<List<Film>>(emptyList())
     val wantedlistFilms: StateFlow<List<Film>> = _wantedlistFilms
     fun toggleDarkMode() {
-        _isDarkMode.value = !_isDarkMode.value
+        ThemeState.isDarkMode.value = !ThemeState.isDarkMode.value
     }
 
     fun loadProfile() {

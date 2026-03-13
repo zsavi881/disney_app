@@ -12,6 +12,10 @@ import androidx.compose.ui.unit.dp
 import fr.isen.savi.disney_app.R
 import fr.isen.savi.disney_app.model.Film
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import fr.isen.savi.disney_app.ui.theme.ThemeState
+
 
 @Composable
 fun ProfileScreen(
@@ -24,7 +28,8 @@ fun ProfileScreen(
     val wishlistFilms by profileViewModel.wishlistFilms.collectAsState()
     val wantedlistFilms by profileViewModel.wantedlistFilms.collectAsState()
 
-    val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+    val isDarkMode by ThemeState.isDarkMode.collectAsState()
+
 
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile()

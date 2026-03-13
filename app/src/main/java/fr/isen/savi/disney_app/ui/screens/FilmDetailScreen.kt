@@ -21,7 +21,7 @@ fun FilmDetailScreen(
     val film by filmDetailViewModel.film.collectAsState()
     val userStatus by filmDetailViewModel.userStatusMap.collectAsState()
     val owners by filmDetailViewModel.owners.collectAsState()
-    val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+    //val isDarkMode by profileViewModel.isDarkMode.collectAsState()
 
     LaunchedEffect(filmId) {
         filmDetailViewModel.loadFilm(filmId)

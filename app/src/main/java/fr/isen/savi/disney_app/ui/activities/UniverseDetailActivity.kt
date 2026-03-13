@@ -11,17 +11,18 @@ import fr.isen.savi.disney_app.ui.screens.UniverseScreen
 import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
 import fr.isen.savi.disney_app.viewmodel.UniverseViewModel
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
+import fr.isen.savi.disney_app.BaseActivity
 
-class UniverseDetailActivity : ComponentActivity() {
+class UniverseDetailActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val profileViewModel = ProfileViewModel()//instencie profil
 
-        setContent {
+        setAppContent {
             val universeViewModel: UniverseViewModel = viewModel()
-            val isDarkMode by profileViewModel.isDarkMode.collectAsState()
+            //val isDarkMode by profileViewModel.isDarkMode.collectAsState()
 
-            DisneyAppTheme(darkTheme = isDarkMode) {
+            //DisneyAppTheme(darkTheme = isDarkMode) {
                 UniverseScreen(
                     universeViewModel = universeViewModel,
                     onFilmClick = { id ->
@@ -34,7 +35,7 @@ class UniverseDetailActivity : ComponentActivity() {
                         startActivity(Intent(this, ProfileActivity::class.java))
                     }
                 )
-            }
+            //}
         }
 
     }
