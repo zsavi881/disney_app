@@ -5,11 +5,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.isen.savi.disney_app.ui.activities.UniverseDetailActivity
 import fr.isen.savi.disney_app.ui.screens.LoginScreen
+import fr.isen.savi.disney_app.ui.screens.RegisterScreen
 import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
 import fr.isen.savi.disney_app.viewmodel.AuthViewModel
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
@@ -33,17 +37,28 @@ class MainActivity : ComponentActivity() {
             DisneyAppTheme(darkTheme = isDarkMode) {
                 val authViewModel: AuthViewModel = viewModel()
 
-                LoginScreen(
-                    authViewModel = authViewModel,
-                    onLoginSuccess = {
-                        // On lance le catalogue
+                val state: MutableState<Boolean> = remember { mutableStateOf(false) }
+
+                if(state.value == false) {
+                    LoginScreen(
+                        authViewModel = authViewModel,
+                        onLoginSuccess = {
+                            // On lance le catalogue
+                            val intent = Intent(this, UniverseDetailActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        },
+                        onRegisterClick = {
+                            state.value = true
+                        }
+                    )
+                } else {
+                    RegisterScreen(authViewModel) {
                         val intent = Intent(this, UniverseDetailActivity::class.java)
                         startActivity(intent)
                         finish()
-                    },
-                    onRegisterClick = {
                     }
-                )
+                }
             }
         }
     }

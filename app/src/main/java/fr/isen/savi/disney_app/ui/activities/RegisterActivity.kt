@@ -10,7 +10,9 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.isen.savi.disney_app.MainActivity
 import fr.isen.savi.disney_app.ui.screens.ProfileScreen
+import fr.isen.savi.disney_app.ui.screens.RegisterScreen
 import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
+import fr.isen.savi.disney_app.viewmodel.AuthViewModel
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
 
 class RegisterActivity : ComponentActivity() {
@@ -22,6 +24,7 @@ class RegisterActivity : ComponentActivity() {
         setContent {
             // 1. Initialisation du ViewModel
             val profileViewModel: ProfileViewModel = viewModel()
+            val authViewModel: AuthViewModel = viewModel()
             // 2. Observation de l'état du thème (Dark Mode)
             // On utilise "by" pour déléguer l'état et simplifier l'usage de isDarkMode
             val isDarkMode by profileViewModel.isDarkMode.collectAsState()
@@ -39,6 +42,17 @@ class RegisterActivity : ComponentActivity() {
                         finish()
                     }
                 )
+
+                RegisterScreen(
+                    authViewModel
+                ) {
+                    // Action de déconnexion avec nettoyage de la pile d'activités
+                    val intent = Intent(this, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                    startActivity(intent)
+                    finish()
+                }
             }
         }
     }

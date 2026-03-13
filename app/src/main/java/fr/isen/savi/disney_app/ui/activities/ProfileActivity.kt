@@ -18,9 +18,9 @@ class ProfileActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
-        val profileViewModel = ProfileViewModel()//instencie dans onCreate
+        //val profileViewModel = ProfileViewModel()//instencie dans onCreate
         setContent {
-            //val profileViewModel: ProfileViewModel = viewModel()// instencie dans Set
+            val profileViewModel: ProfileViewModel = viewModel()// instencie dans Set
 
             val isDarkMode by profileViewModel.isDarkMode.collectAsState()
 
