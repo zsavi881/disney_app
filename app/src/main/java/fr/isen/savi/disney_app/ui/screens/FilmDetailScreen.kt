@@ -29,6 +29,7 @@ fun FilmDetailScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(horizontal = 24.dp)
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
@@ -43,6 +44,7 @@ fun FilmDetailScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp)
             .padding(innerPadding)
     ) {
         Text(

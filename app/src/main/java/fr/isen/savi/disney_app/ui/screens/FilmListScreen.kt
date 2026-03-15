@@ -29,6 +29,7 @@ fun FilmListScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .padding(horizontal = 24.dp)
             .padding(innerPadding),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -45,8 +46,11 @@ fun FilmListScreen(
             )
         }
 
+
         items(films) { film ->
+            Spacer(modifier = Modifier.height(8.dp))
             FilmCard(
+
                 film = film,
                 onClick = { onFilmClick(film.getStableId()) }
             )
@@ -59,6 +63,7 @@ fun FilmCard(film: Film, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 24.dp)
             .clickable { onClick() }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

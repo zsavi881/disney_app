@@ -46,7 +46,7 @@ fun UniverseScreen(
                 CircularProgressIndicator()
             }
         } else {
-            LazyColumn(modifier = Modifier.padding(padding).fillMaxSize()) {
+            LazyColumn(modifier = Modifier.padding(padding).fillMaxSize().padding(horizontal = 24.dp)) {
                 categories.forEach { categorie ->
 
                     // catégorie
