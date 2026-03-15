@@ -17,6 +17,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import fr.isen.savi.disney_app.R
+
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
@@ -32,7 +33,7 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("")}
 
-        if (user != null) {
+    if (user != null) {
         LaunchedEffect(Unit) {
             onLoginSuccess()
         }
@@ -41,7 +42,8 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding),
+            .padding(innerPadding)
+            .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -51,6 +53,7 @@ fun LoginScreen(
             modifier = Modifier
                 .height(140.dp)
         )
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Text("Login", style = MaterialTheme.typography.headlineMedium)
@@ -75,7 +78,6 @@ fun LoginScreen(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password
             )
-
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -93,7 +95,6 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                //authViewModel.register(name, email, password)
                 onRegisterClick()
             },
             modifier = Modifier.fillMaxWidth()
