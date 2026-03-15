@@ -6,6 +6,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.isen.savi.disney_app.viewmodel.FilmDetailViewModel
@@ -13,7 +14,8 @@ import fr.isen.savi.disney_app.viewmodel.FilmDetailViewModel
 @Composable
 fun FilmDetailScreen(
     filmId: String,
-    filmDetailViewModel: FilmDetailViewModel
+    filmDetailViewModel: FilmDetailViewModel,
+    innerPadding: PaddingValues
 ) {
     val film by filmDetailViewModel.film.collectAsState()
     val userStatus by filmDetailViewModel.userStatusMap.collectAsState()
@@ -24,7 +26,13 @@ fun FilmDetailScreen(
     }
 
     if (film == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
             CircularProgressIndicator()
         }
         return
@@ -36,7 +44,8 @@ fun FilmDetailScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(horizontal = 24.dp)
+            .padding(innerPadding)
     ) {
         Text(
             text = currentFilm.title,
@@ -87,6 +96,12 @@ fun FilmDetailScreen(
             label = "Je possède le DVD/Blu-ray",
             isActive = userStatus["ownPhysical"] == true,
             onClick = { filmDetailViewModel.updateStatus(filmId, "ownPhysical", !(userStatus["ownPhysical"] == true)) }
+        )
+
+        StatusButton(
+            label = "Je le veux",
+            isActive = userStatus["wantedPhysical"] == true,
+            onClick = { filmDetailViewModel.updateStatus(filmId, "wantedPhysical", !(userStatus["wantedPhysical"] == true)) }
         )
 
         Spacer(modifier = Modifier.height(24.dp))

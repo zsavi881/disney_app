@@ -7,11 +7,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.isen.savi.disney_app.viewmodel.AuthViewModel
 
+//pour mdp caché
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
+
+//pour logo
+import androidx.compose.foundation.Image
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import fr.isen.savi.disney_app.R
+
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
     onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    innerPadding: PaddingValues
 ) {
 
     val user by authViewModel.user.collectAsState()
@@ -19,6 +31,7 @@ fun LoginScreen(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("")}
 
     if (user != null) {
         LaunchedEffect(Unit) {
@@ -29,9 +42,19 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
+            .padding(innerPadding)
+            .padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_disney_app),
+            contentDescription = "Disney App Logo",
+            modifier = Modifier
+                .height(140.dp)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text("Login", style = MaterialTheme.typography.headlineMedium)
 
@@ -50,7 +73,11 @@ fun LoginScreen(
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            )
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -66,7 +93,12 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        TextButton(onClick = onRegisterClick) {
+        Button(
+            onClick = {
+                onRegisterClick()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ){
             Text("Create an account")
         }
 

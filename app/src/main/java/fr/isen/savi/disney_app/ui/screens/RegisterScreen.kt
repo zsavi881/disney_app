@@ -1,16 +1,24 @@
 package fr.isen.savi.disney_app.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import fr.isen.savi.disney_app.R
 import fr.isen.savi.disney_app.viewmodel.AuthViewModel
 
 @Composable
 fun RegisterScreen(
     authViewModel: AuthViewModel,
-    onRegisterSuccess: () -> Unit
+    onRegisterSuccess: () -> Unit,
+    innerPadding: PaddingValues
 ) {
 
     val user by authViewModel.user.collectAsState()
@@ -29,9 +37,20 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
+            .padding(horizontal = 24.dp)
+            .padding(innerPadding),
+
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        Image(
+            painter = painterResource(id = R.drawable.logo_disney_app),
+            contentDescription = "Disney App Logo",
+            modifier = Modifier
+                .height(140.dp)
+        )
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text("Register", style = MaterialTheme.typography.headlineMedium)
 
@@ -59,7 +78,12 @@ fun RegisterScreen(
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            )
+
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -67,6 +91,7 @@ fun RegisterScreen(
         Button(
             onClick = {
                 authViewModel.register(name, email, password)
+                onRegisterSuccess()//ou je dis que c'est sur listeScreen que je revoie ??
             },
             modifier = Modifier.fillMaxWidth()
         ) {

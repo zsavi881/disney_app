@@ -71,6 +71,11 @@ class FirebaseRepository {
             .addOnCompleteListener { onComplete(it.isSuccessful) }
     }
 
+    fun deleteFilm(userId: String, filmId: String, onComplete: (Boolean) -> Unit) {
+        statusRef.child(userId).child(filmId).removeValue()
+            .addOnCompleteListener { onComplete(it.isSuccessful) }
+    }
+
     fun getOwnersForFilm(filmId: String, onResult: (List<String>) -> Unit) {
         statusRef.get().addOnSuccessListener { snapshot ->
             val owners = mutableListOf<String>()
@@ -84,5 +89,15 @@ class FirebaseRepository {
         }.addOnFailureListener {
             onResult(emptyList())
         }
+    }
+    fun updateSingleFilmField(
+        userId: String,
+        filmId: String,
+        field: String,
+        value: Boolean,
+        onComplete: (Boolean) -> Unit
+    ) {
+        statusRef.child(userId).child(filmId).child(field).setValue(value)
+            .addOnCompleteListener { onComplete(it.isSuccessful) }
     }
 }

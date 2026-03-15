@@ -17,6 +17,7 @@ import fr.isen.savi.disney_app.viewmodel.FilmListViewModel
 fun FilmListScreen(
     universeId: String,
     filmListViewModel: FilmListViewModel,
+    innerPadding: PaddingValues,
     onFilmClick: (String) -> Unit
 ) {
     val films by filmListViewModel.films.collectAsState()
@@ -26,7 +27,10 @@ fun FilmListScreen(
     }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp)
+            .padding(innerPadding),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -42,8 +46,11 @@ fun FilmListScreen(
             )
         }
 
+
         items(films) { film ->
+            Spacer(modifier = Modifier.height(8.dp))
             FilmCard(
+
                 film = film,
                 onClick = { onFilmClick(film.getStableId()) }
             )
@@ -54,13 +61,15 @@ fun FilmListScreen(
 @Composable
 fun FilmCard(film: Film, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() }
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .clickable { onClick() }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = film.title, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Année : ${film.releaseDate}", style = MaterialTheme.typography.bodyMedium)
-
             Text(text = "Genre : ${film.genre}", style = MaterialTheme.typography.bodySmall)
         }
     }

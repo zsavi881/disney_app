@@ -7,7 +7,7 @@ import fr.isen.savi.disney_app.repository.FirebaseRepository
 import fr.isen.savi.disney_app.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-
+import fr.isen.savi.disney_app.ui.theme.ThemeState
 class ProfileViewModel : ViewModel() {
 
     private val firebaseRepository = FirebaseRepository()
@@ -15,9 +15,6 @@ class ProfileViewModel : ViewModel() {
 
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile
-
-    private val _isDarkMode = MutableStateFlow(false)
-    val isDarkMode: StateFlow<Boolean> = _isDarkMode
 
     private val _ownedFilms = MutableStateFlow<List<Film>>(emptyList())
     val ownedFilms: StateFlow<List<Film>> = _ownedFilms
@@ -27,9 +24,11 @@ class ProfileViewModel : ViewModel() {
 
     private val _wishlistFilms = MutableStateFlow<List<Film>>(emptyList())
     val wishlistFilms: StateFlow<List<Film>> = _wishlistFilms
-
+    
+    private val _wantedlistFilms = MutableStateFlow<List<Film>>(emptyList())
+    val wantedlistFilms: StateFlow<List<Film>> = _wantedlistFilms
     fun toggleDarkMode() {
-        _isDarkMode.value = !_isDarkMode.value
+        ThemeState.isDarkMode.value = !ThemeState.isDarkMode.value
     }
 
     fun loadProfile() {
@@ -56,6 +55,7 @@ class ProfileViewModel : ViewModel() {
             val owned = mutableListOf<Film>()
             val watched = mutableListOf<Film>()
             val wishlist = mutableListOf<Film>()
+            val wantedlist = mutableListOf<Film>()
 
             allFilms.forEach { film ->
                 val stableId = film.getStableId()
@@ -64,11 +64,13 @@ class ProfileViewModel : ViewModel() {
                         if (statusMap["ownPhysical"] == true) owned.add(film)
                         if (statusMap["watched"] == true) watched.add(film)
                         if (statusMap["wantToWatch"] == true) wishlist.add(film)
+                        if (statusMap["wantedPhysical"] == true) wantedlist.add(film)
                     }
 
                     _ownedFilms.value = owned.toList()
                     _watchedFilms.value = watched.toList()
                     _wishlistFilms.value = wishlist.toList()
+                    _wantedlistFilms.value = wantedlist.toList()
                 }
             }
         }
@@ -83,5 +85,19 @@ class ProfileViewModel : ViewModel() {
         _wishlistFilms.value = emptyList()
 
         onSuccess()
+    }
+    fun deleteFilm(userId: String, filmId: String) {
+        firebaseRepository.deleteFilm(userId, filmId) { success ->
+            if (success) {
+                loadProfile()
+            }
+        }
+    }
+    fun removeFilmFromSection(userId: String, filmId: String, field: String) {
+        firebaseRepository.updateSingleFilmField(userId, filmId, field, false) { success ->
+            if (success) {
+                loadProfile()
+            }
+        }
     }
 }
