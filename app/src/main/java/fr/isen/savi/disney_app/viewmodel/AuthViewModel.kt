@@ -19,7 +19,6 @@ class AuthViewModel : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    // On vérifie si un utilisateur est déjà connecté au démarrage
     init {
         val currentUser = authRepository.getCurrentUser()
         if (currentUser != null) {
@@ -54,7 +53,7 @@ class AuthViewModel : ViewModel() {
         _isLoading.value = true
         _error.value = null
 
-        authRepository.signUp(email, password) { success, errorMessage ->
+        authRepository.signUp(email, password, name) { success, errorMessage ->
             _isLoading.value = false
             if (success) {
                 val firebaseUser = authRepository.getCurrentUser()

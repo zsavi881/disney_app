@@ -90,8 +90,8 @@ fun RegisterScreen(
 
         Button(
             onClick = {
+                // Le LaunchedEffect en haut s'occupera de rediriger quand le compte sera prêt.
                 authViewModel.register(name, email, password)
-                onRegisterSuccess()//ou je dis que c'est sur listeScreen que je revoie ??
             },
             modifier = Modifier.fillMaxWidth()
         ) {

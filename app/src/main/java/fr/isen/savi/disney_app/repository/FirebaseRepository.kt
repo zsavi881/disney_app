@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import fr.isen.savi.disney_app.model.Categorie
 import fr.isen.savi.disney_app.model.Film
+import fr.isen.savi.disney_app.model.UserProfile
 
 class FirebaseRepository {
     private val database = FirebaseDatabase.getInstance()
@@ -90,6 +91,16 @@ class FirebaseRepository {
             onResult(emptyList())
         }
     }
+
+    fun getUserInfo(userId: String, onResult: (UserProfile?) -> Unit) {
+        database.getReference("users").child(userId).get().addOnSuccessListener { snapshot ->
+            val profile = snapshot.getValue(UserProfile::class.java)
+            onResult(profile)
+        }.addOnFailureListener {
+            onResult(null)
+        }
+    }
+
     fun updateSingleFilmField(
         userId: String,
         filmId: String,

@@ -3,6 +3,7 @@ package fr.isen.savi.disney_app.viewmodel
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import fr.isen.savi.disney_app.model.Film
+import fr.isen.savi.disney_app.model.UserProfile
 import fr.isen.savi.disney_app.repository.FirebaseRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,16 +18,15 @@ class FilmDetailViewModel : ViewModel() {
     private val _userStatusMap = MutableStateFlow<Map<String, Any>>(emptyMap())
     val userStatusMap: StateFlow<Map<String, Any>> = _userStatusMap
 
-    private val _owners = MutableStateFlow<List<String>>(emptyList())
-    val owners: StateFlow<List<String>> = _owners
+    // on stocke maintenant des objets UserProfile
+    private val _ownersProfiles = MutableStateFlow<List<UserProfile>>(emptyList())
+    val ownersProfiles: StateFlow<List<UserProfile>> = _ownersProfiles
 
     fun loadFilm(filmId: String) {
-        //  Charger les données du film
         repository.getFilmById(filmId) { foundFilm ->
             _film.value = foundFilm
         }
 
-        // Charger le statut de l'utilisateur actuel
         val userId = auth.currentUser?.uid
         if (userId != null) {
             repository.getFilmStatus(userId, filmId) { status ->
@@ -34,22 +34,41 @@ class FilmDetailViewModel : ViewModel() {
             }
         }
 
-        // Charger la liste des propriétaires à proximité
-        repository.getOwnersForFilm(filmId) { ownerList ->
-            _owners.value = ownerList
+        repository.getOwnersForFilm(filmId) { ownerIds ->
+            if (ownerIds.isEmpty()) {
+                _ownersProfiles.value = emptyList()
+            } else {
+                fetchProfilesFromIds(ownerIds)
+            }
+        }
+    }
+
+    private fun fetchProfilesFromIds(ids: List<String>) {
+        val loadedProfiles = mutableListOf<UserProfile>()
+        var count = 0
+
+        ids.forEach { id ->
+            repository.getUserInfo(id) { profile ->
+                profile?.let { loadedProfiles.add(it) }
+                count++
+
+                if (count == ids.size) {
+                    _ownersProfiles.value = loadedProfiles.toList()
+                }
+            }
         }
     }
 
     fun updateStatus(filmId: String, key: String, value: Any) {
         val userId = auth.currentUser?.uid ?: return
-
         val currentStatus = _userStatusMap.value.toMutableMap()
         currentStatus[key] = value
-
         _userStatusMap.value = currentStatus
 
         repository.updateFilmStatus(userId, filmId, currentStatus) { success ->
             if (!success) {
+                loadFilm(filmId)
+            } else {
                 loadFilm(filmId)
             }
         }
