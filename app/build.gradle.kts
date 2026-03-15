@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -62,4 +63,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth.ktx)
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.material:material-icons-extended")
+
 }

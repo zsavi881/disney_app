@@ -6,29 +6,32 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.isen.savi.disney_app.viewmodel.FilmDetailViewModel
-import fr.isen.savi.disney_app.ui.theme.DisneyAppTheme
-import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
 
 @Composable
 fun FilmDetailScreen(
     filmId: String,
-    filmDetailViewModel: FilmDetailViewModel
+    filmDetailViewModel: FilmDetailViewModel,
+    innerPadding: PaddingValues
 ) {
-    val profileViewModel = ProfileViewModel()
     val film by filmDetailViewModel.film.collectAsState()
     val userStatus by filmDetailViewModel.userStatusMap.collectAsState()
     val owners by filmDetailViewModel.owners.collectAsState()
-    //val isDarkMode by profileViewModel.isDarkMode.collectAsState()
 
     LaunchedEffect(filmId) {
         filmDetailViewModel.loadFilm(filmId)
     }
 
     if (film == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
             CircularProgressIndicator()
         }
         return
@@ -40,7 +43,7 @@ fun FilmDetailScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(innerPadding)
     ) {
         Text(
             text = currentFilm.title,

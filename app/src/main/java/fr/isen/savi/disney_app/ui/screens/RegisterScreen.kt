@@ -17,7 +17,8 @@ import fr.isen.savi.disney_app.viewmodel.AuthViewModel
 @Composable
 fun RegisterScreen(
     authViewModel: AuthViewModel,
-    onRegisterSuccess: () -> Unit
+    onRegisterSuccess: () -> Unit,
+    innerPadding: PaddingValues
 ) {
 
     val user by authViewModel.user.collectAsState()
@@ -36,7 +37,7 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(innerPadding),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

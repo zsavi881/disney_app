@@ -1,6 +1,5 @@
 package fr.isen.savi.disney_app.ui.screens
 
-import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,7 +21,8 @@ import fr.isen.savi.disney_app.R
 fun LoginScreen(
     authViewModel: AuthViewModel,
     onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    innerPadding: PaddingValues
 ) {
 
     val user by authViewModel.user.collectAsState()
@@ -41,7 +41,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(innerPadding),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

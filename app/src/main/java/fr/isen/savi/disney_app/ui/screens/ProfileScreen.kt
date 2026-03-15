@@ -7,9 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import fr.isen.savi.disney_app.R
 import fr.isen.savi.disney_app.model.Film
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
 import androidx.compose.runtime.getValue
@@ -20,7 +18,8 @@ import fr.isen.savi.disney_app.ui.theme.ThemeState
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    innerPadding: PaddingValues
 ) {
     val userProfile by profileViewModel.userProfile.collectAsState()
     val ownedFilms by profileViewModel.ownedFilms.collectAsState()
@@ -36,7 +35,12 @@ fun ProfileScreen(
     }
 
     if (userProfile == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        )  {
             CircularProgressIndicator()
         }
         return
@@ -45,9 +49,10 @@ fun ProfileScreen(
     val profile = userProfile!!
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            //.verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             Text(
