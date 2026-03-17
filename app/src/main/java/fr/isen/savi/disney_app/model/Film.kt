@@ -21,7 +21,11 @@ data class Film(
     @set:PropertyName("numero")
     var numero: Int = 0,
 
-    var id: String = ""
+    var id: String = "",
+
+    @get:PropertyName("imageUrl")
+    @set:PropertyName("imageUrl")
+    var imageUrl: String = ""
 ) {
     fun getStableId(): String {
         return title.lowercase()
