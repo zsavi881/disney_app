@@ -42,17 +42,21 @@ class UniverseViewModel : ViewModel() {
 
     suspend fun fetchImageUrl(movieTitle: String): String {
         return try {
-            val response = tmdbApi.searchMovie(TMDB_API_KEY, movieTitle)
-            // On récupère le premier résultat de la recherche
-            val posterPath = response.results.firstOrNull()?.poster_path
+            val cleanTitle = movieTitle.trim()
+
+            val response = tmdbApi.searchMovie(TMDB_API_KEY, cleanTitle)
+            var movie = response.results.firstOrNull()
+
+            val posterPath = movie?.poster_path
+
             if (posterPath != null) {
                 "https://image.tmdb.org/t/p/w500$posterPath"
             } else {
-                "" // Pas d'image trouvée
+                ""
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            "" // Erreur réseau
+            ""
         }
     }
 }
