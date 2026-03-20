@@ -41,6 +41,9 @@
             android:exported="false"
             android:label="Mon Profil Disney"
             android:theme="@style/Theme.Disney_App" />
+        <activity
+            android:name=".ui.activities.MyFilmsActivity"
+            android:exported="false" />
 
     </application>
 </manifest>

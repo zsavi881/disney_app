@@ -20,11 +20,17 @@ class AuthViewModel : ViewModel() {
     val error: StateFlow<String?> = _error
 
     init {
+        checkCurrentUser()
+    }
+
+    // Extraction de la logique de vérification pour la réutiliser
+    private fun checkCurrentUser() {
         val currentUser = authRepository.getCurrentUser()
         if (currentUser != null) {
             _user.value = UserProfile(
                 uid = currentUser.uid,
-                displayName = currentUser.displayName ?: "Utilisateur",
+                // On évite le "Utilisateur" en dur ici pour voir si Firebase a la donnée
+                displayName = currentUser.displayName ?: "",
                 email = currentUser.email ?: ""
             )
         }
@@ -35,15 +41,18 @@ class AuthViewModel : ViewModel() {
         _error.value = null
 
         authRepository.signIn(email, password) { success, errorMessage ->
-            _isLoading.value = false
             if (success) {
+                // IMPORTANT : On recharge l'utilisateur depuis Firebase pour avoir le displayName à jour
                 val firebaseUser = authRepository.getCurrentUser()
                 _user.value = UserProfile(
                     uid = firebaseUser?.uid ?: "",
-                    displayName = firebaseUser?.displayName ?: "Utilisateur",
+                    // Si Firebase n'a pas encore de nom, on peut mettre une chaîne vide ou le début de l'email
+                    displayName = firebaseUser?.displayName ?: "",
                     email = firebaseUser?.email ?: email
                 )
+                _isLoading.value = false
             } else {
+                _isLoading.value = false
                 _error.value = errorMessage ?: "Erreur de connexion"
             }
         }
@@ -54,15 +63,17 @@ class AuthViewModel : ViewModel() {
         _error.value = null
 
         authRepository.signUp(email, password, name) { success, errorMessage ->
-            _isLoading.value = false
             if (success) {
-                val firebaseUser = authRepository.getCurrentUser()
+                // Lors de l'inscription, on force le nom qu'on vient de saisir
+                // car updateProfile peut mettre quelques millisecondes à se propager sur Firebase
                 _user.value = UserProfile(
-                    uid = firebaseUser?.uid ?: "",
+                    uid = authRepository.getCurrentUser()?.uid ?: "",
                     displayName = name,
                     email = email
                 )
+                _isLoading.value = false
             } else {
+                _isLoading.value = false
                 _error.value = errorMessage ?: "Erreur d'inscription"
             }
         }

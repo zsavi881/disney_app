@@ -15,3 +15,4 @@ val SurfaceLight = Color(0xFFF4F8FF)
 val TextOnDark = Color(0xFFF5F9FF)
 val TextOnLight = Color(0xFF0D1B2A)
 
+val DisneyLightGray = Color(0xFF757575)
