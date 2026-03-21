@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
-import fr.isen.savi.disney_app.ui.theme.ThemeState
 
 @Composable
 fun ProfileScreen(
@@ -34,7 +33,6 @@ fun ProfileScreen(
     val userProfile by profileViewModel.userProfile.collectAsState()
     val ownedFilms by profileViewModel.ownedFilms.collectAsState()
     val watchedFilms by profileViewModel.watchedFilms.collectAsState()
-    val isDarkMode by ThemeState.isDarkMode.collectAsState()
 
     val backgroundLight = Color(0xFFE3F2FD)
     val duckBlue = Color(0xFF0077B6)
@@ -74,7 +72,7 @@ fun ProfileScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 80.dp, bottom = 30.dp),
+                                    .padding(top = 80.dp, bottom = 40.dp), // Padding augmenté pour compenser le retrait
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
@@ -110,27 +108,6 @@ fun ProfileScreen(
                                         onClick = { onNavigateToMyFilms("owned") }
                                     )
                                 }
-
-                                Spacer(Modifier.height(24.dp))
-
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 24.dp)
-                                        .background(backgroundLight.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
-                                        .padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(Icons.Default.Brightness4, null, tint = darkBlue)
-                                    Spacer(Modifier.width(12.dp))
-                                    Text("Mode Sombre", fontWeight = FontWeight.Bold, color = darkBlue)
-                                    Spacer(Modifier.weight(1f))
-                                    Switch(
-                                        checked = isDarkMode,
-                                        onCheckedChange = { profileViewModel.toggleDarkMode() },
-                                        colors = SwitchDefaults.colors(checkedTrackColor = duckBlue)
-                                    )
-                                }
                             }
                         }
 
@@ -148,7 +125,7 @@ fun ProfileScreen(
                 }
 
                 item {
-                    Spacer(Modifier.height(30.dp))
+                    Spacer(Modifier.height(40.dp))
                     Button(
                         onClick = { profileViewModel.logout { onLogout() } },
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).height(56.dp),
