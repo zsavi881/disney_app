@@ -1,70 +1,92 @@
 package fr.isen.savi.disney_app.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import fr.isen.savi.disney_app.viewmodel.AuthViewModel
-
-//pour mdp caché
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.foundation.text.KeyboardOptions
-
-//pour logo
-import androidx.compose.foundation.Image
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import fr.isen.savi.disney_app.R
 
 @Composable
 fun LoginScreen(
-    authViewModel: AuthViewModel,
-    onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit,
-    innerPadding: PaddingValues
+    onLoginClick: (String, String) -> Unit,
+    onCreateAccountClick: () -> Unit
 ) {
-
-    val user by authViewModel.user.collectAsState()
-    val error by authViewModel.error.collectAsState()
-
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("")}
 
-    if (user != null) {
-        LaunchedEffect(Unit) {
-            onLoginSuccess()
-        }
-    }
+    val backgroundLight = Color(0xFFE3F2FD)
+    val disneyDuckBlue = Color(0xFF0077B6)
+    val darkBlue = Color(0xFF003049)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding)
-            .padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(backgroundLight)
+            .padding(horizontal = 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo_disney_app),
-            contentDescription = "Disney App Logo",
+        Surface(
             modifier = Modifier
-                .height(140.dp)
+                .size(220.dp)
+                .shadow(
+                    elevation = 30.dp,
+                    shape = RoundedCornerShape(40.dp),
+                    ambientColor = Color.Black.copy(alpha = 0.3f),
+                    spotColor = disneyDuckBlue.copy(alpha = 0.4f)
+                ),
+            shape = RoundedCornerShape(40.dp),
+            color = Color.White
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo_disney_app),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .clip(RoundedCornerShape(25.dp)),
+                contentScale = ContentScale.Fit
+            )
+        }
+
+        Spacer(modifier = Modifier.height(35.dp))
+
+        Text(
+            text = "CONNEXION",
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold,
+            color = disneyDuckBlue,
+            letterSpacing = 2.sp
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text("Login", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("Email", color = disneyDuckBlue.copy(alpha = 0.6f)) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor = disneyDuckBlue,
+                unfocusedBorderColor = Color.Transparent,
+            ),
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -72,39 +94,45 @@ fun LoginScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text("Mot de passe", color = disneyDuckBlue.copy(alpha = 0.6f)) },
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
             visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password
-            )
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor = disneyDuckBlue,
+                unfocusedBorderColor = Color.Transparent,
+            ),
+            singleLine = true
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Button(
-            onClick = {
-                authViewModel.login(email, password)
-            },
+            onClick = { onLoginClick(email, password) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .shadow(12.dp, RoundedCornerShape(16.dp)),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = disneyDuckBlue)
+        ) {
+            Text("Login", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        TextButton(
+            onClick = onCreateAccountClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Login")
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            onClick = {
-                onRegisterClick()
-            },
-            modifier = Modifier.fillMaxWidth()
-        ){
-            Text("Create an account")
-        }
-
-        error?.let {
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(it, color = MaterialTheme.colorScheme.error)
+            Text(
+                text = "Pas de compte ? Créer un profil",
+                color = darkBlue.copy(alpha = 0.8f),
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
         }
     }
 }

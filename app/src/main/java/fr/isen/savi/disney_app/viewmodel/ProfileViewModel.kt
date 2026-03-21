@@ -1,5 +1,6 @@
 package fr.isen.savi.disney_app.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import fr.isen.savi.disney_app.model.Film
 import fr.isen.savi.disney_app.model.UserProfile
@@ -7,26 +8,29 @@ import fr.isen.savi.disney_app.repository.FirebaseRepository
 import fr.isen.savi.disney_app.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import fr.isen.savi.disney_app.ui.theme.ThemeState
+
 class ProfileViewModel : ViewModel() {
 
     private val firebaseRepository = FirebaseRepository()
     private val authRepository = AuthRepository()
 
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
-    val userProfile: StateFlow<UserProfile?> = _userProfile
+    val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
 
     private val _ownedFilms = MutableStateFlow<List<Film>>(emptyList())
-    val ownedFilms: StateFlow<List<Film>> = _ownedFilms
+    val ownedFilms: StateFlow<List<Film>> = _ownedFilms.asStateFlow()
 
     private val _watchedFilms = MutableStateFlow<List<Film>>(emptyList())
-    val watchedFilms: StateFlow<List<Film>> = _watchedFilms
+    val watchedFilms: StateFlow<List<Film>> = _watchedFilms.asStateFlow()
 
     private val _wishlistFilms = MutableStateFlow<List<Film>>(emptyList())
-    val wishlistFilms: StateFlow<List<Film>> = _wishlistFilms
-    
+    val wishlistFilms: StateFlow<List<Film>> = _wishlistFilms.asStateFlow()
+
     private val _wantedlistFilms = MutableStateFlow<List<Film>>(emptyList())
-    val wantedlistFilms: StateFlow<List<Film>> = _wantedlistFilms
+    val wantedlistFilms: StateFlow<List<Film>> = _wantedlistFilms.asStateFlow()
+
     fun toggleDarkMode() {
         ThemeState.isDarkMode.value = !ThemeState.isDarkMode.value
     }
@@ -41,16 +45,18 @@ class ProfileViewModel : ViewModel() {
             email = user.email ?: ""
         )
 
+        clearLists()
+
         firebaseRepository.getCategories { categories ->
             val allFilms = mutableListOf<Film>()
             categories.forEach { cat ->
                 cat.franchises.forEach { franchise ->
                     allFilms.addAll(franchise.films)
-                    franchise.sous_sagas.forEach { saga ->
-                        allFilms.addAll(saga.films)
-                    }
+                    franchise.sous_sagas.forEach { saga -> allFilms.addAll(saga.films) }
                 }
             }
+
+            if (allFilms.isEmpty()) return@getCategories
 
             val owned = mutableListOf<Film>()
             val watched = mutableListOf<Film>()
@@ -76,28 +82,23 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
+    fun removeFilmFromSection(userId: String, filmId: String, field: String) {
+        firebaseRepository.updateSingleFilmField(userId, filmId, field, false) { success ->
+            if (success) loadProfile()
+        }
+    }
+
     fun logout(onSuccess: () -> Unit) {
         authRepository.signOut()
-
         _userProfile.value = null
+        clearLists()
+        onSuccess()
+    }
+
+    private fun clearLists() {
         _ownedFilms.value = emptyList()
         _watchedFilms.value = emptyList()
         _wishlistFilms.value = emptyList()
-
-        onSuccess()
-    }
-    fun deleteFilm(userId: String, filmId: String) {
-        firebaseRepository.deleteFilm(userId, filmId) { success ->
-            if (success) {
-                loadProfile()
-            }
-        }
-    }
-    fun removeFilmFromSection(userId: String, filmId: String, field: String) {
-        firebaseRepository.updateSingleFilmField(userId, filmId, field, false) { success ->
-            if (success) {
-                loadProfile()
-            }
-        }
+        _wantedlistFilms.value = emptyList()
     }
 }

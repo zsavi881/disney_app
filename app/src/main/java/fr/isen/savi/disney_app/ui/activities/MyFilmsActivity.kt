@@ -1,41 +1,50 @@
 package fr.isen.savi.disney_app.ui.activities
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue // IMPORT MANQUANT : Indispensable pour le "by"
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.isen.savi.disney_app.BaseActivity
 import fr.isen.savi.disney_app.ui.screens.MyFilmsScreen
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
+import fr.isen.savi.disney_app.viewmodel.UniverseViewModel
 
 class MyFilmsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         enableEdgeToEdge()
 
-        // On récupère le type envoyé depuis ProfileActivity
-        val type = intent.getStringExtra("FILM_TYPE") ?: "watched"
+        val filmType = intent.getStringExtra("FILM_TYPE") ?: "watched"
 
-        setAppContent {
+        setContent {
             val profileViewModel: ProfileViewModel = viewModel()
+            val universeViewModel: UniverseViewModel = viewModel()
 
-            // Grâce à l'import "androidx.compose.runtime.getValue", ces lignes fonctionnent :
-            val watchedFilms by profileViewModel.watchedFilms.collectAsState()
-            val ownedFilms by profileViewModel.ownedFilms.collectAsState()
+            val categoryTitle = if (filmType == "watched") "Mes films vus" else "Ma collection DVD"
 
-            // Choix de la liste selon le type
-            val (title, list) = if (type == "watched") {
-                "Mes Films Vus" to watchedFilms
-            } else {
-                "Ma Collection DVD" to ownedFilms
+            LaunchedEffect(Unit) {
+                profileViewModel.loadProfile()
             }
 
+            val filmsList by (if (filmType == "watched")
+                profileViewModel.watchedFilms
+            else
+                profileViewModel.ownedFilms).collectAsState()
+
             MyFilmsScreen(
-                title = title,
-                films = list,
-                onBack = { finish() }
+                title = categoryTitle,
+                films = filmsList,
+                universeViewModel = universeViewModel,
+                onBack = { finish() },
+                onDeleteClick = { film ->
+                    profileViewModel.userProfile.value?.uid?.let { userId ->
+                        val field = if (filmType == "watched") "watched" else "ownPhysical"
+                        profileViewModel.removeFilmFromSection(userId, film.getStableId(), field)
+                    }
+                }
             )
         }
     }

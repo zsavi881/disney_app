@@ -13,16 +13,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.isen.savi.disney_app.viewmodel.ProfileViewModel
 import fr.isen.savi.disney_app.ui.theme.ThemeState
-import fr.isen.savi.disney_app.ui.theme.DisneyLightGray
 
 @Composable
 fun ProfileScreen(
@@ -37,92 +36,76 @@ fun ProfileScreen(
     val watchedFilms by profileViewModel.watchedFilms.collectAsState()
     val isDarkMode by ThemeState.isDarkMode.collectAsState()
 
+    val backgroundLight = Color(0xFFE3F2FD)
     val duckBlue = Color(0xFF0077B6)
     val darkBlue = Color(0xFF003049)
     val deleteRed = Color(0xFFD32F2F)
 
-    LaunchedEffect(Unit) {
-        profileViewModel.loadProfile()
-    }
-
     if (userProfile == null) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxSize().background(backgroundLight), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(color = duckBlue)
         }
     } else {
-        Box(modifier = Modifier.fillMaxSize().background(Color(0xFFF8FBFF))) {
-
-            // 1. LE FOND DÉGRADÉ
+        Box(modifier = Modifier.fillMaxSize().background(backgroundLight)) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(280.dp)
-                    .background(brush = Brush.verticalGradient(listOf(duckBlue, duckBlue.copy(alpha = 0.7f))))
+                    .height(260.dp)
+                    .background(brush = Brush.verticalGradient(listOf(duckBlue, duckBlue.copy(alpha = 0.6f))))
             )
 
-            // 2. LE CONTENU PRINCIPAL
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Espace pour descendre le contenu
-                item { Spacer(Modifier.height(160.dp)) }
+                item { Spacer(Modifier.height(140.dp)) }
 
                 item {
-                    // Box pour superposer l'avatar sur la Card
                     Box(contentAlignment = Alignment.TopCenter) {
-
-                        // --- LA CARTE BLANCHE ---
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp)
-                                .padding(top = 70.dp) // Décalage pour l'avatar
-                                .shadow(15.dp, RoundedCornerShape(32.dp)),
+                                .padding(top = 70.dp)
+                                .shadow(20.dp, RoundedCornerShape(32.dp)),
                             shape = RoundedCornerShape(32.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 85.dp, bottom = 30.dp), // Padding important pour voir le texte
+                                    .padding(top = 80.dp, bottom = 30.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                // BLOC IDENTITÉ
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(
-                                        text = userProfile?.displayName ?: "Loudimanche",
-                                        fontSize = 30.sp,
-                                        fontWeight = FontWeight.Black,
-                                        color = darkBlue,
-                                        letterSpacing = (-0.5).sp
-                                    )
-                                    Text(
-                                        text = userProfile?.email ?: "",
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = Color.Gray
-                                    )
-                                }
+                                Text(
+                                    text = userProfile?.displayName ?: "Utilisateur",
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = darkBlue
+                                )
+                                Text(
+                                    text = userProfile?.email ?: "",
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
+                                )
 
                                 Spacer(Modifier.height(30.dp))
 
-                                // STATS
                                 Row(
-                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     PremiumStatCard(
                                         modifier = Modifier.weight(1f),
                                         value = "${watchedFilms.size}",
-                                        label = "VUS",
+                                        label = "Films vus",
                                         color = duckBlue,
                                         onClick = { onNavigateToMyFilms("watched") }
                                     )
                                     PremiumStatCard(
                                         modifier = Modifier.weight(1f),
                                         value = "${ownedFilms.size}",
-                                        label = "DVD",
+                                        label = "DVD / Blu-Ray",
                                         color = Color(0xFFE91E63),
                                         onClick = { onNavigateToMyFilms("owned") }
                                     )
@@ -130,12 +113,11 @@ fun ProfileScreen(
 
                                 Spacer(Modifier.height(24.dp))
 
-                                // MODE SOMBRE
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 24.dp)
-                                        .background(Color(0xFFF1F5F9), RoundedCornerShape(16.dp))
+                                        .background(backgroundLight.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
                                         .padding(16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -152,54 +134,44 @@ fun ProfileScreen(
                             }
                         }
 
-                        // --- L'AVATAR (Placé en dernier dans la Box = AU DESSUS) ---
                         Surface(
-                            modifier = Modifier
-                                .size(140.dp)
-                                .shadow(16.dp, CircleShape),
+                            modifier = Modifier.size(130.dp).shadow(12.dp, CircleShape),
                             shape = CircleShape,
                             color = Color.White,
-                            border = BorderStroke(6.dp, Color.White)
+                            border = BorderStroke(4.dp, Color.White)
                         ) {
                             Box(modifier = Modifier.background(duckBlue), contentAlignment = Alignment.Center) {
-                                Icon(
-                                    Icons.Default.Person,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(85.dp),
-                                    tint = Color.White
-                                )
+                                Icon(Icons.Default.Person, null, Modifier.size(80.dp), tint = Color.White)
                             }
                         }
                     }
                 }
 
-                // BOUTON DÉCONNEXION
                 item {
                     Spacer(Modifier.height(30.dp))
-                    OutlinedButton(
+                    Button(
                         onClick = { profileViewModel.logout { onLogout() } },
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp).height(56.dp),
                         shape = RoundedCornerShape(16.dp),
-                        border = BorderStroke(2.dp, deleteRed),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = deleteRed)
+                        colors = ButtonDefaults.buttonColors(containerColor = deleteRed.copy(alpha = 0.1f)),
+                        border = BorderStroke(1.dp, deleteRed.copy(alpha = 0.5f))
                     ) {
-                        Icon(Icons.Default.PowerSettingsNew, null)
+                        Icon(Icons.Default.PowerSettingsNew, null, tint = deleteRed)
                         Spacer(Modifier.width(10.dp))
-                        Text("DÉCONNEXION", fontWeight = FontWeight.Black)
+                        Text("DÉCONNEXION", fontWeight = FontWeight.Black, color = deleteRed)
                     }
-                    Spacer(Modifier.height(50.dp))
+                    Spacer(Modifier.height(40.dp))
                 }
             }
 
-            // 3. BOUTON RETOUR (Toujours au premier plan)
             IconButton(
                 onClick = onNavigateToCatalog,
                 modifier = Modifier
                     .statusBarsPadding()
                     .padding(start = 16.dp, top = 8.dp)
-                    .background(Color.White.copy(alpha = 0.2f), CircleShape)
+                    .background(Color.White.copy(alpha = 0.3f), CircleShape)
             ) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Retour", tint = Color.White)
+                Icon(Icons.Default.ArrowBack, null, tint = Color.White)
             }
         }
     }
@@ -214,11 +186,9 @@ fun PremiumStatCard(
     onClick: () -> Unit
 ) {
     Surface(
-        modifier = modifier
-            .height(110.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(24.dp),
-        color = color.copy(alpha = 0.08f),
+        modifier = modifier.height(100.dp).clickable { onClick() },
+        shape = RoundedCornerShape(20.dp),
+        color = color.copy(alpha = 0.1f),
         border = BorderStroke(1.dp, color.copy(alpha = 0.2f))
     ) {
         Column(
@@ -226,15 +196,9 @@ fun PremiumStatCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(value, fontSize = 28.sp, fontWeight = FontWeight.Black, color = color)
-            Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = DisneyLightGray)
-            Spacer(Modifier.height(4.dp))
-            Icon(
-                Icons.Default.KeyboardArrowRight,
-                contentDescription = null,
-                tint = color.copy(alpha = 0.4f),
-                modifier = Modifier.size(16.dp)
-            )
+            Text(value, fontSize = 26.sp, fontWeight = FontWeight.Black, color = color)
+            Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+            Icon(Icons.Default.KeyboardArrowRight, null, Modifier.size(16.dp), tint = color.copy(alpha = 0.4f))
         }
     }
 }
